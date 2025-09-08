@@ -16,20 +16,28 @@ struct ContentView: View {
                 ItemDescrip: ["Herbal Tea", "Cereal", "Fish", "Fresh Bread", "Vegitables"],
                 PersonalColor: Color.purple,
                 InfoIcon: "person.crop.circle",
-                InfoDescrip: "A description about the pantry and what sort of things are in it"
+                InfoDescrip: "Jane likes to be health conscious and likes to eat fresh and healthy items. Part of what Jane enjoys about eating is making sure she is getting all the nutrients she needs and making the meals herself."
             )
             PantryDetailView(
                 PantryOwner: "John",
-                ItemIcon: ["leaf.fill", "cart.fill", "fish.fill", "laurel.trailing", "carrot.fill"],
-                ItemDescrip: ["Herbal Tea", "Cereal", "Fish", "Fresh Bread", "Vegitables"],
+                ItemIcon: ["cart.fill", "takeoutbag.and.cup.and.straw.fill", "cup.and.saucer.fill", "fork.knife", "drop.fill"],
+                ItemDescrip: ["Quick Meals", "Takeout", "Coffee", "Ready to Eat Meals", "Water"],
                 PersonalColor: Color.teal,
-                InfoIcon: "person.crop.circle",
-                InfoDescrip: "A description about the pantry and what sort of things are in it"
+                InfoIcon: "person.crop.square",
+                InfoDescrip: "John likes quick easy meals and tasty items that dont take a lot of preparing or time. The nutrition content is not something he thinks about much."
             )
         }
-//        .background(Gradient(colors: gradientColors))
-        .tabViewStyle(.page)
+        .tabViewStyle(.page(indexDisplayMode: .always))
         .foregroundStyle(.white)
+        .background(
+            LinearGradient(
+                colors: [Color("GradientTop"), Color("GradientBottom")],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+        )
+
     }
 }
 
