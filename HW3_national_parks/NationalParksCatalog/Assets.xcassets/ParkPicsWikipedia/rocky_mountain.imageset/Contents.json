@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "Rocky_Mountain_National_Park_in_September_2011_-_Glacier_Gorge_from_Bear_Lake.jpg",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

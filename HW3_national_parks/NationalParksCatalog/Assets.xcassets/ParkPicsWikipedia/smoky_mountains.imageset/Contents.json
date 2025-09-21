@@ -1,0 +1,21 @@
+{
+  "images" : [
+    {
+      "filename" : "View_atop_Cliff_Tops_on_Mount_LeConte,_GSMNP,_TN.jpg",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

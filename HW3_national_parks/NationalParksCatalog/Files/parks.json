@@ -1,0 +1,66 @@
+[
+    {
+        "id": 1,
+        "name": "Yellowstone National Park",
+        "subtitle": "Wyoming, Montana, idaho",
+        "details": "Yellowstone National Park is America's first national park. It spans 2.2 million acres across Wyoming, Montana, and idaho, featuring geysers, hot springs, and diverse wildlife including bison, bears, and wolves.",
+        "imageName": "yellowstone",
+        "isFavorite": false
+    },
+    {
+        "id": 2,
+        "name": "Grand Canyon National Park",
+        "subtitle": "Arizona",
+        "details": "The Grand Canyon is one of the world's most spectacular natural wonders. Carved by the Colorado River over millions of years, it reveals nearly 2 billion years of Earth's geological history.",
+        "imageName": "grand_canyon",
+        "isFavorite": false
+    },
+    {
+        "id": 3,
+        "name": "Yosemite National Park",
+        "subtitle": "California",
+        "details": "Yosemite is renowned for its granite cliffs, waterfalls, clear streams, and giant sequoia groves. It's home to iconic landmarks like Half Dome and El Capitan.",
+        "imageName": "yosemite",
+        "isFavorite": false
+    },
+    {
+        "id": 4,
+        "name": "Great Smoky Mountains National Park",
+        "subtitle": "Tennessee, North Carolina",
+        "details": "The Great Smoky Mountains National Park is the most visited national park in America. It features ancient mountains, diverse wildlife, and preserved Southern Appalachian mountain culture.",
+        "imageName": "smoky_mountains",
+        "isFavorite": false
+    },
+    {
+        "id": 5,
+        "name": "Zion National Park",
+        "subtitle": "Utah",
+        "details": "Zion National Park is known for its dramatic red cliffs and narrow slot canyons. The Virgin River has carved deep canyons through the red and tan colored Navajo Sandstone.",
+        "imageName": "zion",
+        "isFavorite": false
+    },
+    {
+        "id": 6,
+        "name": "Acadia National Park",
+        "subtitle": "Maine",
+        "details": "Acadia National Park protects the natural beauty of the highest rocky headlands along the Atlantic coastline of the United States. It features rugged coastlines, pristine lakes, and forested mountains.",
+        "imageName": "acadia",
+        "isFavorite": false
+    },
+    {
+        "id": 7,
+        "name": "Rocky Mountain National Park",
+        "subtitle": "Colorado",
+        "details": "Rocky Mountain National Park features majestic mountain views, diverse wildlife, and 300 miles of hiking trails. The park's high altitude provides spectacular alpine scenery.",
+        "imageName": "rocky_mountain",
+        "isFavorite": false
+    },
+    {
+        "id": 8,
+        "name": "Glacier National Park",
+        "subtitle": "Montana",
+        "details": "Glacier National Park is known as the 'Crown of the Continent' due to its pristine ecosystems. It features dramatic peaks, glacial-carved valleys, and over 700 lakes.",
+        "imageName": "glacier",
+        "isFavorite": false
+    }
+]
