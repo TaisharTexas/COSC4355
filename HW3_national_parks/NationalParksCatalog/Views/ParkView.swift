@@ -12,7 +12,6 @@ struct ParkView: View {
     @Environment(\.modelContext) var modelContext
     @Query private var parks: [CatalogItem]
     @State private var path = [CatalogItem]()
-    //    @State private var isEditing: Bool = false
     
     let layout = [
         GridItem(.flexible(minimum: 120)),
@@ -44,15 +43,32 @@ struct ParkView: View {
                                 Spacer()
                                 
                                 Text("\(thePark.name)")
-                                    .font(.title.weight(.light))
-                                    .padding(.vertical)
+                                    .font(.title)
+                                    .padding(.vertical, 4)
+                                    .lineLimit(2)
+                                    .minimumScaleFactor(0.5)
+                                    .multilineTextAlignment(.center)
+                                Text("\(thePark.subtitle)")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(1)
+                                    .multilineTextAlignment(.center)
                                 
                                 Spacer()
                             }//: VStack
                             .padding(8)
+                            .padding(.bottom, 28)
                             .background(.ultraThinMaterial)
                             .clipShape(RoundedRectangle(cornerRadius: 8, style: .circular))
                             .aspectRatio(3/4, contentMode: .fit)   // keep all cards same height
+                            .overlay(alignment: .bottomTrailing){
+                                let favVal = thePark.isFavorite ? "heart.fill" : "heart"
+                                Image(systemName: favVal)   
+                                        .foregroundColor(.blue)
+                                        .padding(8)
+                                        .background(.ultraThinMaterial, in: Circle())
+                                        .padding(8)
+                            }//: Overlay
                             
                         }//: Navigation Link (inside ForEach)
                         .foregroundStyle(.primary)
@@ -73,15 +89,4 @@ struct ParkView: View {
             }//: .overlay
         }//: Navigation Stack
     }//: View
-    
-    // Check if the image name given matches to an actual image in the assets
-    private func imageForPark(named imageName: String) -> Image? {
-        if UIImage(named: imageName) != nil {
-            print("CONTENT: park image found for \(imageName)")
-            return Image(imageName)
-        } else {
-            print("CONTENT: no park image found for \(imageName)...using default")
-            return nil
-        }
-    }
 }

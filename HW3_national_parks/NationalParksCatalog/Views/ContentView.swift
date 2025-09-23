@@ -10,15 +10,6 @@ import SwiftData
 
 
 struct ContentView: View {
-//    @Environment(\.modelContext) var modelContext
-//    @Query private var parks: [CatalogItem]
-//    @State private var path = [CatalogItem]()
-//    @State private var isEditing: Bool = false
-    
-//    let layout = [
-//        GridItem(.flexible(minimum: 120)),
-//        GridItem(.flexible(minimum: 120))
-//    ]
     
     var body: some View {
         TabView{
@@ -36,6 +27,18 @@ struct ContentView: View {
     }//: Body
     
 }//: Content View
+
+// Check if the image name given matches to an actual image in the assets
+// (gets used wherever the park images are shown)
+func imageForPark(named imageName: String) -> Image? {
+    if UIImage(named: imageName) != nil {
+        print("CONTENT: park image found for \(imageName)")
+        return Image(imageName)
+    } else {
+        print("CONTENT: no park image found for \(imageName)...using default")
+        return nil
+    }
+}
 
 //#Preview {
 //    ContentView()

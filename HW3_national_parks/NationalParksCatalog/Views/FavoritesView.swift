@@ -9,7 +9,8 @@ import SwiftUI
 import SwiftData
 
 struct FavoritesView: View {
-    @Query private var parks: [CatalogItem]
+//    @Query private var parks: [CatalogItem]
+    @Query(filter: #Predicate<CatalogItem> { $0.isFavorite == true }) private var favoriteParks: [CatalogItem]
     @State private var path = [CatalogItem]()
     
     let layout = [
@@ -19,42 +20,58 @@ struct FavoritesView: View {
     var body: some View {
         NavigationStack (path: $path){
             ScrollView {
-                LazyVGrid(columns: layout) {
-                    ForEach(parks){thePark in
-                        NavigationLink(value: thePark){
-                            VStack{
-                                //only process the park if its a favorite
-                                if thePark.isFavorite == true{
-                                    //check if the image name provided matches to an existing image (via imageForPark helper function)
-                                    if let parkPic = imageForPark(named: thePark.imageName) {
-                                        // the return from the helper func
-                                        parkPic
-                                            .resizable()
-                                            .scaledToFit()
-                                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .circular))
-                                    } else {
-                                        //no return from helper func so display generic park icon
-                                        Image(systemName: "mountain.2")
-                                            .resizable()
-                                            .scaledToFit()
-                                            .padding(40)
-                                            .foregroundStyle(.quaternary)
-                                    }
-                                    Spacer()
-                                    
-                                    Text("\(thePark.name)")
-                                        .font(.title.weight(.light))
-                                        .padding(.vertical)
-                                    
-                                    Spacer()
+                LazyVStack(spacing: 16) {
+                    ForEach(favoriteParks){thePark in
+                        NavigationLink(value: thePark) {
+                            ZStack {
+                                //check if the image name provided matches to an existing image (via imageForPark helper function)
+                                if let parkPic = imageForPark(named: thePark.imageName) {
+                                    // the return from the helper func
+                                    parkPic
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(height: 175)
+                                        .clipped()
+                                } else {
+                                    //no return from helper func so display generic park icon
+                                    Image(systemName: "mountain.2")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(height: 175)
+                                        .padding(40)
+                                        .foregroundStyle(.quaternary)
                                 }
-                                
-                            }//: VStack
-                            .padding(8)
-                            .background(.ultraThinMaterial)
+
+                                VStack {
+                                    Spacer()
+                                    HStack {
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text(thePark.name)
+                                                .font(.title2)
+                                                .bold()
+                                                .lineLimit(1)
+                                                .minimumScaleFactor(0.5)
+                                                .foregroundStyle(.primary)
+                                            Text(thePark.subtitle)
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                                .lineLimit(1)
+                                        }
+                                        Spacer()
+                                        Image(systemName: "chevron.forward")
+                                            .font(.title2)
+                                            .foregroundStyle(.primary)
+                                    }//: HStack
+                                    .padding(8)
+                                    .background(.ultraThinMaterial)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .circular))
+                                    .padding([.horizontal, .bottom], 8)
+                                }//: VStack (text block for park)
+                                .frame(maxHeight: .infinity, alignment: .bottom)
+                            }//: ZStack (main body block)
+                            .frame(height: 175)
                             .clipShape(RoundedRectangle(cornerRadius: 8, style: .circular))
-                            .aspectRatio(3/4, contentMode: .fit)   // keep all cards same height
-                        }//: Navigation Link (inside ForEach)
+                        }//: Navigation Link
                         .foregroundStyle(.primary)
                         
                     }//: ForEach
@@ -63,25 +80,15 @@ struct FavoritesView: View {
                 .padding(.horizontal)
                 
             }//: Scroll View
-            .navigationTitle(parks.isEmpty ? "" : "Favorites")
+            .navigationTitle(favoriteParks.isEmpty ? "" : "Favorites")
             .navigationDestination(for: CatalogItem.self, destination: ParkDetailView.init)
             .overlay{
-                if parks.isEmpty {
+                if favoriteParks.isEmpty {
                     //                    print("CONTENT: parks.isEmpty is true...showing no content screen")
-                    CustomContentUnavailableView(icon: "tree.circle", title: "no favorite parks", description: "seems like theres nothing here...maybe check outside and touch some grass?")
+                    CustomContentUnavailableView(icon: "tree.circle", title: "no favorite parks :(", description: "seems like theres nothing here...maybe go to a few and see if you like them?")
                 }
             }//: .overlay
         }//: Navigation Stack
     }//: Body
     
-    // Check if the image name given matches to an actual image in the assets
-    private func imageForPark(named imageName: String) -> Image? {
-        if UIImage(named: imageName) != nil {
-            print("CONTENT: park image found for \(imageName)")
-            return Image(imageName)
-        } else {
-            print("CONTENT: no park image found for \(imageName)...using default")
-            return nil
-        }
-    }
 }//: Favorites View
