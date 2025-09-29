@@ -1,0 +1,50 @@
+[
+    {
+        "id": 1,
+        "name": "Dog",
+        "species": "Canis familiaris",
+        "petDescription": "Loyal and playful companion, known as “man’s best friend.",
+        "imageName": "pawprint.fill",
+        "isFavorite": false
+    },
+    {
+        "id": 2,
+        "name": "Cat",
+        "species": "Felis catus",
+        "petDescription": "Independent and curious, enjoys cozy spaces and naps.",
+        "imageName": "pawprint.circle",
+        "isFavorite": false
+    },
+    {
+        "id": 3,
+        "name": "Hamster",
+        "species": "Cricetinae",
+        "petDescription": "Small and active pet, often kept in cages with wheels.",
+        "imageName": "pawprint",
+        "isFavorite": false
+    },
+    {
+        "id": 4,
+        "name": "Rabbit",
+        "species": "Oryctolagus cuniculus",
+        "petDescription": "Gentle and social, loves vegetables and hopping around.",
+        "imageName": "hare.fill",
+        "isFavorite": false
+    },
+    {
+        "id": 5,
+        "name": "Turtle",
+        "species": "Testudines",
+        "petDescription": "Calm and long-lived, recognized for their hard shells.",
+        "imageName": "tortoise.fill",
+        "isFavorite": false
+    },
+    {
+        "id": 6,
+        "name": "Parrot",
+        "species": "Psittaciformes",
+        "petDescription": "Colorful and intelligent, some can mimic human speech.",
+        "imageName": "bird.fill",
+        "isFavorite": false
+    }
+]
