@@ -9,13 +9,18 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView{
+            Tab("Score Match", systemImage: "list.bullet.below.rectangle"){
+                ScoreView()
+            }
+            Tab("Team Data", systemImage: "list.clipboard.fill"){
+                TeamView()
+            }
+            Tab("Event Data", systemImage: "globe.fill"){
+                EventView()
+            }
         }
-        .padding()
+        .tint(Color("ftc_orange"))
     }
 }
 
