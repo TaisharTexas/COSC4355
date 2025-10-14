@@ -242,30 +242,30 @@ struct Award: Codable, Identifiable {
     var id: Int { awardId }
 }
 
-// MARK: - Usage Example
-struct ExampleUsage {
-    let api = EventAPIService.shared
-    
-    func fetchCurrentEvents() async {
-        do {
-            // Get current season
-            let season = try await api.getCurrentSeason()
-            print("Current season: \(season.season)")
-            
-            // Get all events
-            let events = try await api.getEvents(season: season.season)
-            print("Found \(events.eventCount) events")
-            
-            // Get specific event
-            if let firstEvent = events.events.first {
-                let teams = try await api.getTeamsAtEvent(
-                    season: season.season,
-                    eventCode: firstEvent.eventCode
-                )
-                print("Teams at event: \(teams.teamCountTotal)")
-            }
-        } catch {
-            print("Error: \(error.localizedDescription)")
-        }
-    }
-}
+//// MARK: - Usage Example
+//struct ExampleUsage {
+//    let api = EventAPIService.shared
+//    
+//    func fetchCurrentEvents() async {
+//        do {
+//            // Get current season
+//            let season = try await api.getCurrentSeason()
+//            print("Current season: \(season.season)")
+//            
+//            // Get all events
+//            let events = try await api.getEvents(season: season.season)
+//            print("Found \(events.eventCount) events")
+//            
+//            // Get specific event
+//            if let firstEvent = events.events.first {
+//                let teams = try await api.getTeamsAtEvent(
+//                    season: season.season,
+//                    eventCode: firstEvent.eventCode
+//                )
+//                print("Teams at event: \(teams.teamCountTotal)")
+//            }
+//        } catch {
+//            print("Error: \(error.localizedDescription)")
+//        }
+//    }
+//}

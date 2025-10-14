@@ -8,10 +8,13 @@
 import SwiftUI
 
 @main
-struct HW4_weather_nowApp: App {
+struct HW4_weather_now_App: App {
+    @StateObject private var favorites = FavoritesStore()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(favorites)
         }
     }
 }
