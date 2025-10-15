@@ -25,7 +25,7 @@ struct CityDetailView: View {
                     Text("\(error)")
                         .foregroundColor(.red)
                         .padding()
-                } else if let weather = service.currentWeather {
+                } else if let weather = service.weatherCache[city.id] {
                     VStack(spacing: 12) {
                         Text("\(city.displayName)")
                             .font(.headline)
@@ -35,7 +35,8 @@ struct CityDetailView: View {
                             Text("\(Int(current.temperature_2m))°C")
                                 .font(.system(size: 60, weight: .thin))
                             
-                            Text(service.weatherDescription(code: current.weathercode))
+                            let description = service.weatherDescription(code: current.weathercode)
+                            Text(description[0])
                                 .font(.title3)
                                 .foregroundColor(.secondary)
                         }

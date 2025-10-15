@@ -10,11 +10,21 @@ import SwiftUI
 @main
 struct HW4_weather_now_App: App {
     @StateObject private var favorites = FavoritesStore()
+    @AppStorage("selectedColorScheme") private var selectedScheme = "light"
+    
+    var colorScheme: ColorScheme? {
+        switch selectedScheme {
+            case "light": return .light
+            case "dark": return .dark
+            default: return .light
+        }
+    }
     
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environmentObject(favorites)
+                .preferredColorScheme(colorScheme)
         }
     }
 }

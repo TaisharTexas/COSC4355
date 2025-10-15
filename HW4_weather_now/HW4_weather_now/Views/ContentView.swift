@@ -16,7 +16,7 @@ struct ContentView: View {
     @State private var isSearching = false
     
     let layout = [
-        GridItem(.flexible(minimum: 120))
+        GridItem(.flexible())
     ]
     
     var body: some View {
@@ -37,11 +37,12 @@ struct ContentView: View {
                     Text("Weather App")
                         .font(.largeTitle)
                         .bold()
+                        .foregroundColor(.wTextHeader)
                     
                     Spacer()
                     NavigationLink(destination: SettingsView()) {
                         Image(systemName: "gearshape.fill")
-                            .foregroundColor(.primary)
+                            .foregroundColor(.wAccent)
                     }
                 }//: Title HStack Block
                 
@@ -54,16 +55,50 @@ struct ContentView: View {
                         LazyVGrid(columns: layout) {
                             ForEach(favorites.cities){favCity in
                                 NavigationLink(value: favCity){
-                                    VStack {
-                                        Text(favCity.name)
-                                            .font(.headline)
-                                        Text(favCity.country)
-                                            .font(.caption)
-                                    }
+                                    HStack{
+                                        VStack(alignment: .leading){
+                                            Text(favCity.name)
+                                                .font(.largeTitle)
+                                                .foregroundColor(Color.wTextHeader)
+                                            Text(favCity.country)
+                                                .font(.subheadline)
+                                                .foregroundColor(Color.wTextDefault)
+                                            Text("\(favCity.latitude), \(favCity.longitude)")
+                                                .font(.footnote)
+                                                .foregroundColor(.wTextField)
+                                        }//: Name, Country, Loc
+                                        Spacer()
+                                        VStack{
+                                            if let weather = service.weatherCache[favCity.id],
+                                                let current = weather.current {
+                                                let description = service.weatherDescription(code: current.weathercode)
+                                                HStack {
+                                                    Text("\(Int(current.temperature_2m))°")
+                                                        .font(.largeTitle)
+                                                        .foregroundColor(.wTextHeader)
+                                                    Image(systemName: description[1])
+                                                        .foregroundColor(.wTextHeader)
+                                                        .font(.largeTitle)
+                                                }
+                                                Text(description[0])
+                                                    .font(.caption)
+                                                    .foregroundColor(.wTextDefault)
+                                            }
+                                        }//: Icon, Descrip, Temp
+                                        
+                                    }//:Fav City Card Block
+                                    .frame(maxWidth: .infinity, minHeight: 50)
                                     .padding()
                                     .background(Color.blue.opacity(0.2))
                                     .cornerRadius(12)
-                                }//:FavCity Card Block
+                                }//:FavCity Card Nav Link
+                                .task {
+                                    // Only load if not already cached
+                                    if service.weatherCache[favCity.id] == nil {
+                                        await service.loadWeather(for: favCity)
+                                    }
+                                }//: Task load fav city data for card if not cached
+                                
                             }//: ForEach
                         }//:Lazy VStack
                     }//:Scroll View
@@ -76,19 +111,27 @@ struct ContentView: View {
                 }) {
                     HStack {
                         Image(systemName: "magnifyingglass")
-                            .foregroundColor(.gray)
+                            .foregroundColor(.wTextDefault)
                         Text("Search for a city")
-                            .foregroundColor(.gray)
+                            .foregroundColor(.wTextDefault)
                         Spacer()
                     }
                     .padding()
-                    .background(Color.gray.opacity(0.1))
+                    .background(Color.wAccent.opacity(0.3))
                     .cornerRadius(10)
                 }
                 .padding(.horizontal)
                 
             }//:Outer Vstack
             .padding()
+            .background(
+                LinearGradient(
+                    gradient: Gradient(colors: [Color.wBackgroundGradientTop, Color.wBackgroundGradientBot]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .ignoresSafeArea()
+            )
             .navigationDestination(for: City.self) { city in
                 CityDetailView(city: city, service: service)
             }
@@ -101,10 +144,23 @@ struct ContentView: View {
                     VStack {
                         // Search Field
                         HStack {
-                            TextField("Enter city name", text: $searchText)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .autocapitalization(.none)
-                                .focused($isSearchFieldFocused)
+                            HStack{
+                                ZStack(alignment: .leading) {
+                                    if searchText.isEmpty {
+                                        Text("Enter city name")
+                                            .foregroundColor(.wTextDefault.opacity(0.6))
+                                            .padding(.leading, 4)
+                                    }
+                                    TextField("", text: $searchText)
+                                        .foregroundStyle(.wTextDefault)
+                                        .autocapitalization(.none)
+                                        .focused($isSearchFieldFocused)
+                                        .onSubmit {
+                                            Task {
+                                                await service.searchCities(query: searchText)
+                                            }
+                                        }
+                                }
                                 .overlay(
                                     HStack {
                                         Spacer()
@@ -114,17 +170,16 @@ struct ContentView: View {
                                                 service.searchResults = []
                                             }) {
                                                 Image(systemName: "xmark.circle.fill")
-                                                    .foregroundColor(.gray)
+                                                    .foregroundColor(.wTextDefault)
                                                     .padding(.trailing, 8)
                                             }
                                         }
                                     }
                                 )
-                                .onSubmit {
-                                    Task {
-                                        await service.searchCities(query: searchText)
-                                    }
-                                }
+                            }//: Inner Hstack
+                            .padding()
+                            .background(Color.wAccent.opacity(0.3))
+                            .cornerRadius(10)
                             
                             // X button to close entire search sheet
                             Button(action: {
@@ -134,10 +189,10 @@ struct ContentView: View {
                                 isSearching = false
                             }) {
                                 Image(systemName: "xmark.circle")
-                                    .foregroundColor(.gray.opacity(0.5))
-                                    .font(.headline)
+                                    .foregroundColor(.wTextField.opacity(0.8))
+                                    .font(.largeTitle)
                             }
-                        }
+                        }//: Outer Hstack
                         .padding()
                         
                         // Loading indicator
@@ -192,7 +247,7 @@ struct ContentView: View {
                             Spacer()
                         }
                     }
-                    .navigationTitle("Search Cities")
+                    .background(Color.wSecondary).ignoresSafeArea()
                     .navigationBarTitleDisplayMode(.inline)
                     .navigationDestination(for: City.self) { city in
                         CityDetailView(city: city, service: service)

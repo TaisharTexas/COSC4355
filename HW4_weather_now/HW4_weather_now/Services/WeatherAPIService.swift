@@ -55,6 +55,7 @@ final class WeatherAPIService: ObservableObject {
     @Published var currentWeather: WeatherData?
     @Published var errorMessage: String?
     @Published var isLoading: Bool = false
+    @Published var weatherCache: [Int: WeatherData] = [:]
     
     // Custom session with timeout
     private let session: URLSession = {
@@ -97,9 +98,6 @@ final class WeatherAPIService: ObservableObject {
     
     // Load weather for a city
     func loadWeather(for city: City) async {
-        isLoading = true
-        defer { isLoading = false }
-        
         do {
             errorMessage = nil
             var components = URLComponents(string: "\(weatherBase)/forecast")!
@@ -114,24 +112,23 @@ final class WeatherAPIService: ObservableObject {
             
             let (data, _) = try await session.data(from: components.url!)
             let decoded = try JSONDecoder().decode(WeatherData.self, from: data)
-            self.currentWeather = decoded
+            self.weatherCache[city.id] = decoded  // Store by city ID
         } catch {
             self.errorMessage = "Failed to load weather: \(error.localizedDescription)"
-            self.currentWeather = nil
         }
     }
     
     // Helper to decode weather codes
-    func weatherDescription(code: Int) -> String {
+    func weatherDescription(code: Int) -> [String] {
         switch code {
-        case 0: return "Clear sky"
-        case 1, 2, 3: return "Partly cloudy"
-        case 45, 48: return "Foggy"
-        case 51, 53, 55: return "Drizzle"
-        case 61, 63, 65: return "Rain"
-        case 71, 73, 75: return "Snow"
-        case 95: return "Thunderstorm"
-        default: return "Unknown"
+        case 0: return ["Clear sky", "sun.max.fill"]
+        case 1, 2, 3: return ["Partly cloudy", "cloud.sun.fill"]
+        case 45, 48: return ["Foggy", "cloud.fill"]
+        case 51, 53, 55: return ["Drizzle", "cloud.sun.rain.fillcloud.heavyrain.fill"]
+        case 61, 63, 65: return ["Rain", "cloud.heavyrain.fill"]
+        case 71, 73, 75: return ["Snow", "cloud.snow.fill"]
+        case 95: return ["Thunderstorm", "cloud.bolt.rain.fill"]
+        default: return ["Unknown", ""]
         }
     }
 }
