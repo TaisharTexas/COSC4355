@@ -5,74 +5,30 @@
 //  Created by Andrew Lee on 10/13/25.
 //
 
-import Foundation
 import SwiftUI
-import SwiftData
 
 struct CityDetailView: View {
-    
     let city: City
     @ObservedObject var service: WeatherAPIService
     @EnvironmentObject var favorites: FavoritesStore
+    @AppStorage("temperatureUnit") private var tempUnit = "celsius"
+    
+    @State private var weatherInfo: CityWeatherInfo?
+    
+    private var temperatureUnit: TemperatureUnit {
+        tempUnit == "fahrenheit" ? .fahrenheit : .celsius
+    }
     
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                if service.isLoading {
+                if let info = weatherInfo {
+                    WeatherDetailCard(info: info, temperatureUnit: temperatureUnit)
+                } else {
                     ProgressView("Loading weather...")
-                        .padding()
-                } else if let error = service.errorMessage {
-                    Text("\(error)")
-                        .foregroundColor(.red)
-                        .padding()
-                } else if let weather = service.weatherCache[city.id] {
-                    VStack(spacing: 12) {
-                        Text("\(city.displayName)")
-                            .font(.headline)
-                            .multilineTextAlignment(.center)
-                        
-                        if let current = weather.current {
-                            Text("\(Int(current.temperature_2m))°C")
-                                .font(.system(size: 60, weight: .thin))
-                            
-                            let description = service.weatherDescription(code: current.weathercode)
-                            Text(description[0])
-                                .font(.title3)
-                                .foregroundColor(.secondary)
-                        }
-                        
-                        HStack(spacing: 20) {
-                            VStack {
-                                Text("Lat")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Text(String(format: "%.2f", weather.latitude))
-                                    .font(.caption)
-                            }
-                            VStack {
-                                Text("Lon")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Text(String(format: "%.2f", weather.longitude))
-                                    .font(.caption)
-                            }
-                            VStack {
-                                Text("Timezone")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                Text(weather.timezone)
-                                    .font(.caption)
-                            }
-                        }
-                    }
-                    .padding()
-                    .background(Color.blue.opacity(0.1))
-                    .cornerRadius(12)
-                    .padding(.horizontal)
                 }
-            }//: VStack
-            .padding(.vertical)
-        }//: Scroll View
+            }
+        }
         .navigationTitle(city.name)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -84,12 +40,59 @@ struct CityDetailView: View {
                         .foregroundColor(favorites.contains(city) ? .yellow : .gray)
                 }
             }
-        }//: Favorite toggle
+        }
         .task {
             await service.loadWeather(for: city)
-        }//: Task
-    }//: Body View
-}//: Struct View
+            if let weather = service.weatherCache[city.id] {
+                weatherInfo = CityWeatherInfo(city: city, weather: weather)
+            }
+        }
+    }
+}
 
-
-
+struct WeatherDetailCard: View {
+    let info: CityWeatherInfo
+    let temperatureUnit: TemperatureUnit
+    
+    var body: some View {
+        VStack(spacing: 12) {
+            Text(info.city.displayName)
+                .font(.headline)
+            
+            Text("\(info.currentTemp(unit: temperatureUnit) ?? 0)\(info.unitSymbol(for: temperatureUnit))")
+                .font(.system(size: 60, weight: .thin))
+            
+            Text(info.description)
+                .font(.title3)
+                .foregroundColor(.secondary)
+            
+            HStack(spacing: 20) {
+                VStack {
+                    Text("Lat")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text(String(format: "%.2f", info.city.latitude))
+                        .font(.caption)
+                }
+                VStack {
+                    Text("Lon")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text(String(format: "%.2f", info.city.longitude))
+                        .font(.caption)
+                }
+                VStack {
+                    Text("Timezone")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    Text(info.timezone)
+                        .font(.caption)
+                }
+            }
+        }
+        .padding()
+        .background(Color.blue.opacity(0.1))
+        .cornerRadius(12)
+        .padding(.horizontal)
+    }
+}

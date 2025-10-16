@@ -42,5 +42,9 @@ final class FavoritesStore: ObservableObject{
             UserDefaults.standard.set(data, forKey: key)
         }
     }
-    
+    func clear() {
+        cities = []
+        persist()
+    }
+
 }

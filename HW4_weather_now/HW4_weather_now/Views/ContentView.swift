@@ -55,50 +55,8 @@ struct ContentView: View {
                         LazyVGrid(columns: layout) {
                             ForEach(favorites.cities){favCity in
                                 NavigationLink(value: favCity){
-                                    HStack{
-                                        VStack(alignment: .leading){
-                                            Text(favCity.name)
-                                                .font(.largeTitle)
-                                                .foregroundColor(Color.wTextHeader)
-                                            Text(favCity.country)
-                                                .font(.subheadline)
-                                                .foregroundColor(Color.wTextDefault)
-                                            Text("\(favCity.latitude), \(favCity.longitude)")
-                                                .font(.footnote)
-                                                .foregroundColor(.wTextField)
-                                        }//: Name, Country, Loc
-                                        Spacer()
-                                        VStack{
-                                            if let weather = service.weatherCache[favCity.id],
-                                                let current = weather.current {
-                                                let description = service.weatherDescription(code: current.weathercode)
-                                                HStack {
-                                                    Text("\(Int(current.temperature_2m))°")
-                                                        .font(.largeTitle)
-                                                        .foregroundColor(.wTextHeader)
-                                                    Image(systemName: description[1])
-                                                        .foregroundColor(.wTextHeader)
-                                                        .font(.largeTitle)
-                                                }
-                                                Text(description[0])
-                                                    .font(.caption)
-                                                    .foregroundColor(.wTextDefault)
-                                            }
-                                        }//: Icon, Descrip, Temp
-                                        
-                                    }//:Fav City Card Block
-                                    .frame(maxWidth: .infinity, minHeight: 50)
-                                    .padding()
-                                    .background(Color.blue.opacity(0.2))
-                                    .cornerRadius(12)
+                                    CityWeatherCardView(city: favCity, service: service)
                                 }//:FavCity Card Nav Link
-                                .task {
-                                    // Only load if not already cached
-                                    if service.weatherCache[favCity.id] == nil {
-                                        await service.loadWeather(for: favCity)
-                                    }
-                                }//: Task load fav city data for card if not cached
-                                
                             }//: ForEach
                         }//:Lazy VStack
                     }//:Scroll View

@@ -10,6 +10,10 @@ import SwiftUI
 
 struct SettingsView: View {
     @AppStorage("selectedColorScheme") private var selectedScheme = "light"
+    @AppStorage("temperatureUnit") private var tempUnit = "celsius"
+    @StateObject private var service = WeatherAPIService()
+    @EnvironmentObject var favorites: FavoritesStore
+    @State private var showResetConfirmation = false
     
     var body: some View {
         Form {
@@ -17,11 +21,6 @@ struct SettingsView: View {
                 Text("Weather App")
                 Text("Version 1.0")
             }
-        }
-        .navigationTitle("Settings")
-        .navigationBarTitleDisplayMode(.inline)
-        
-        Form {
             Section(header: Text("Appearance")) {
                 Picker("Theme", selection: $selectedScheme) {
                     Text("Light").tag("light")
@@ -29,8 +28,36 @@ struct SettingsView: View {
                 }
                 .pickerStyle(.segmented)
             }
+            Section(header: Text("Units")) {
+                Picker("Temperature", selection: $tempUnit) {
+                    Text("Celsius").tag("celsius")
+                    Text("Fahrenheit").tag("fahrenheit")
+                }
+                .pickerStyle(.segmented)
+            }
+            Section(header: Text("Data")) {
+                Button(role: .destructive, action: {
+                    showResetConfirmation = true
+                }) {
+                    Text("Clear All Data")
+                }
+            }
+            
+            
         }
         .navigationTitle("Settings")
+        .navigationBarTitleDisplayMode(.inline)
+        .alert("Clear All Data?", isPresented: $showResetConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Clear", role: .destructive) {
+                service.clearAllData()
+                favorites.clear()
+            }
+        } message: {
+            Text("This will delete all saved favorites and cached weather data. This cannot be undone.")
+        }
+        
+        
         
         /**
          Will add toggles for dark/light mode and metric/imperial

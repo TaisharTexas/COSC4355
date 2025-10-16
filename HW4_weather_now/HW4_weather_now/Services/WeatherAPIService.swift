@@ -55,7 +55,12 @@ final class WeatherAPIService: ObservableObject {
     @Published var currentWeather: WeatherData?
     @Published var errorMessage: String?
     @Published var isLoading: Bool = false
-    @Published var weatherCache: [Int: WeatherData] = [:]
+    @Published var weatherCache: [Int: WeatherData] = [:] {
+        didSet {
+            print("DEBUG: weatherCache didSet triggered, now contains \(weatherCache.count) cities")
+        }
+    }
+    private var loadingCities: Set<Int> = []
     
     // Custom session with timeout
     private let session: URLSession = {
@@ -98,6 +103,21 @@ final class WeatherAPIService: ObservableObject {
     
     // Load weather for a city
     func loadWeather(for city: City) async {
+        // Check if already cached
+        if weatherCache[city.id] != nil {
+            print("⚡️ Using cached weather for \(city.name)")
+            return
+        }
+        
+        print("🌐 Fetching weather from API for \(city.name)")
+        // Check if already loading
+        guard !loadingCities.contains(city.id) else {
+            return
+        }
+        
+        loadingCities.insert(city.id)
+        defer { loadingCities.remove(city.id) }
+        
         do {
             errorMessage = nil
             var components = URLComponents(string: "\(weatherBase)/forecast")!
@@ -112,13 +132,14 @@ final class WeatherAPIService: ObservableObject {
             
             let (data, _) = try await session.data(from: components.url!)
             let decoded = try JSONDecoder().decode(WeatherData.self, from: data)
-            self.weatherCache[city.id] = decoded  // Store by city ID
+            self.weatherCache[city.id] = decoded
         } catch {
             self.errorMessage = "Failed to load weather: \(error.localizedDescription)"
         }
     }
     
     // Helper to decode weather codes
+    //OLD
     func weatherDescription(code: Int) -> [String] {
         switch code {
         case 0: return ["Clear sky", "sun.max.fill"]
@@ -128,7 +149,35 @@ final class WeatherAPIService: ObservableObject {
         case 61, 63, 65: return ["Rain", "cloud.heavyrain.fill"]
         case 71, 73, 75: return ["Snow", "cloud.snow.fill"]
         case 95: return ["Thunderstorm", "cloud.bolt.rain.fill"]
-        default: return ["Unknown", ""]
+        default: return ["Unknown", "questionmark.circle.dashed"]
+        }
+    }
+    
+    func loadWeatherForCities(_ cities: [City]) async {
+        await withTaskGroup(of: Void.self) { group in
+            for city in cities {
+                group.addTask {
+                    await self.loadWeather(for: city)
+                }
+            }
+        }
+    }
+    
+    func clearAllData() {
+        // Clear weather cache
+        weatherCache.removeAll()
+        searchResults = []
+        errorMessage = nil
+        
+        // Clear UserDefaults (persistent storage)
+        if let appDomain = Bundle.main.bundleIdentifier {
+            UserDefaults.standard.removePersistentDomain(forName: appDomain)
+        }
+    }
+    func clearFavorites() {
+        // If your FavoritesStore uses UserDefaults, add this to that class instead:
+        if let appDomain = Bundle.main.bundleIdentifier {
+            UserDefaults.standard.removePersistentDomain(forName: appDomain)
         }
     }
 }
