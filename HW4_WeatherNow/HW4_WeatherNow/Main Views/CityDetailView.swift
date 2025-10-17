@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Charts
 
 /**
  Full display name
@@ -23,12 +24,24 @@ struct CityDetailView: View {
     let city: City
     @ObservedObject var service: WeatherAPIService
     @EnvironmentObject var favorites: FavoritesStore
-    @AppStorage("temperatureUnit") private var tempUnit = "celsius"
+//    @AppStorage("temperatureUnit") private var tempUnit = "celsius"
+    @AppStorage("unitSystem") private var unitSystem = "metric"
+    @State private var selectForcast: Forecast = .temp
     
     @State private var weatherInfo: CityWeatherInfo?
     
+    private var currentUnitSystem: UnitSystem {
+        unitSystem == "imperial" ? .imperial : .metric
+    }
+    
     private var temperatureUnit: TemperatureUnit {
-        tempUnit == "fahrenheit" ? .fahrenheit : .celsius
+        currentUnitSystem.temperatureUnit
+    }
+    
+    enum Forecast: String, CaseIterable {
+        case temp = "Temperature"
+        case precip = "Precipitation"
+        case wind = "Wind"
     }
     
     var body: some View {
@@ -36,10 +49,34 @@ struct CityDetailView: View {
             VStack(spacing: 20) {
                 if let info = weatherInfo {
                     WeatherDetailCard(info: info, temperatureUnit: temperatureUnit)
+                    
+                    Divider()
+                        .padding(.horizontal)
+                    
+                    // Picker
+                    Picker("Forecast", selection: $selectForcast) {
+                        ForEach(Forecast.allCases, id: \.self) { type in
+                            Text(type.rawValue).tag(type)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.horizontal)
+                    
+                    // Chart based on selection
+                    ForecastChartView(
+                        info: info,
+                        forecastType: selectForcast,
+                        unitSystem: currentUnitSystem
+                    )
+                    .padding(.horizontal)
                         
                 } else {
                     ProgressView("Loading weather...")
                 }
+                
+                Divider()
+                
+                
             }
             .frame(maxWidth: .infinity)
         }//: Scrollview
@@ -75,6 +112,8 @@ struct CityDetailView: View {
             await service.loadWeather(for: city)
             if let weather = service.weatherCache[city.id] {
                 weatherInfo = CityWeatherInfo(city: city, weather: weather)
+                print("🌤️ DEBUG: Weather code for \(city.name): \(weatherInfo?.weatherCode ?? -1)")
+                print("🌤️ DEBUG: Weather description: \(weatherInfo?.description ?? "unknown")")
             }
         }//: task
         

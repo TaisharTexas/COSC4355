@@ -11,6 +11,7 @@ import SwiftUI
 struct SettingsView: View {
     @AppStorage("selectedColorScheme") private var selectedScheme = "light"
     @AppStorage("temperatureUnit") private var tempUnit = "celsius"
+    @AppStorage("unitSystem") private var unitSystem = "metric"
     @StateObject private var service = WeatherAPIService()
     @EnvironmentObject var favorites: FavoritesStore
     @State private var showResetConfirmation = false
@@ -31,9 +32,9 @@ struct SettingsView: View {
                     .pickerStyle(.segmented)
                 }
                 Section(header: Text("Units")) {
-                    Picker("Temperature", selection: $tempUnit) {
-                        Text("Celsius").tag("celsius")
-                        Text("Fahrenheit").tag("fahrenheit")
+                    Picker("Unit System", selection: $unitSystem) {
+                        Text("Metric").tag("metric")
+                        Text("Imperial").tag("imperial")
                     }
                     .pickerStyle(.segmented)
                 }

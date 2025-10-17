@@ -14,10 +14,14 @@ import SwiftUI
 struct FavCity_WeatherDetailsView: View {
     let info: CityWeatherInfo
     
-    @AppStorage("temperatureUnit") private var tempUnit = "celsius"
+    @AppStorage("unitSystem") private var unitSystem = "metric"
+    
+    private var currentUnitSystem: UnitSystem {
+        unitSystem == "imperial" ? .imperial : .metric
+    }
     
     private var temperatureUnit: TemperatureUnit {
-        tempUnit == "fahrenheit" ? .fahrenheit : .celsius
+        currentUnitSystem.temperatureUnit
     }
     
     var body: some View {

@@ -34,8 +34,9 @@ struct WeatherData: Codable {
     struct HourlyData: Codable {
         let time: [String]
         let temperature_2m: [Double]
-        let precipitation: [Double]?
+        let precipitation_probability: [Int]?
         let weathercode: [Int]?
+        let windspeed_10m: [Double]?
     }
     
     struct CurrentData: Codable {
@@ -124,7 +125,7 @@ final class WeatherAPIService: ObservableObject {
             components.queryItems = [
                 URLQueryItem(name: "latitude", value: String(city.latitude)),
                 URLQueryItem(name: "longitude", value: String(city.longitude)),
-                URLQueryItem(name: "hourly", value: "temperature_2m,precipitation,weathercode"),
+                URLQueryItem(name: "hourly", value: "temperature_2m,precipitation_probability,weathercode,windspeed_10m"),
                 URLQueryItem(name: "current", value: "temperature_2m,weathercode"),
                 URLQueryItem(name: "timezone", value: "auto"),
                 URLQueryItem(name: "forecast_days", value: "7")

@@ -10,22 +10,9 @@
 		493C85952EA29A68006F51C6 /* HW4_WeatherNow.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HW4_WeatherNow.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		493C85C02EA29BFF006F51C6 /* Exceptions for "HW4_WeatherNow" folder in "HW4_WeatherNow" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"HW4-WeatherNow-Info.plist",
-			);
-			target = 493C85942EA29A68006F51C6 /* HW4_WeatherNow */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		493C85972EA29A68006F51C6 /* HW4_WeatherNow */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				493C85C02EA29BFF006F51C6 /* Exceptions for "HW4_WeatherNow" folder in "HW4_WeatherNow" target */,
-			);
 			path = HW4_WeatherNow;
 			sourceTree = "<group>";
 		};

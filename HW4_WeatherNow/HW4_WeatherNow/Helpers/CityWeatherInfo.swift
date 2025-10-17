@@ -79,11 +79,56 @@ struct CityWeatherInfo {
         guard let codes = weather.hourly.weathercode else { return nil }
         return Array(codes.prefix(count))
     }
+    
+    func hourlyPrecipitationProbability(count: Int = 24) -> [Int] {
+        guard let precipProb = weather.hourly.precipitation_probability else { return [] }
+        return Array(precipProb.prefix(count))
+    }
+
+    func hourlyWindSpeedKmh(count: Int = 24) -> [Double] {
+        guard let wind = weather.hourly.windspeed_10m else { return [] }
+        return Array(wind.prefix(count))
+    }
+    
+    func hourlyWindSpeedMph(count: Int = 24) -> [Double] {
+        // Convert km/h to mph (1 km/h = 0.621371 mph)
+        hourlyWindSpeedKmh(count: count).map { $0 * 0.621371 }
+    }
+    
+    func hourlyWindSpeed(unitSystem: UnitSystem, count: Int = 24) -> [Double] {
+        switch unitSystem {
+        case .metric: return hourlyWindSpeedKmh(count: count)
+        case .imperial: return hourlyWindSpeedMph(count: count)
+        }
+    }
 }//:end struct CityWeatherInfo
 
 enum TemperatureUnit: String {
     case celsius
     case fahrenheit
+}
+
+enum UnitSystem: String {
+    case metric
+    case imperial
+    
+    var temperatureUnit: TemperatureUnit {
+        switch self {
+        case .metric: return .celsius
+        case .imperial: return .fahrenheit
+        }
+    }
+    
+    var windSpeedLabel: String {
+        switch self {
+        case .metric: return "Wind Speed (km/h)"
+        case .imperial: return "Wind Speed (mph)"
+        }
+    }
+    
+    var precipitationLabel: String {
+        return "Chance of Rain (%)" // Same for both units
+    }
 }
 
 enum WeatherDescriptions {
@@ -93,9 +138,13 @@ enum WeatherDescriptions {
         case 1, 2, 3: return "Partly cloudy"
         case 45, 48: return "Foggy"
         case 51, 53, 55: return "Drizzle"
+        case 56, 57: return "Freezing Drizzle"
         case 61, 63, 65: return "Rain"
-        case 71, 73, 75: return "Snow"
-        case 95: return "Thunderstorm"
+        case 66, 67: return "Freezing Rain"
+        case 71, 73, 75, 77: return "Snow"
+        case 80, 81, 82: return "Rain Showers"
+        case 85, 86: return "Snow Showers"
+        case 95, 96, 99: return "Thunderstorm"
         default: return "Unknown"
         }//: end switch
     }//:end text func
@@ -106,9 +155,9 @@ enum WeatherDescriptions {
         case 1, 2, 3: return "cloud.sun.fill"
         case 45, 48: return "cloud.fill"
         case 51, 53, 55: return "cloud.sun.rain.fill"
-        case 61, 63, 65: return "cloud.heavyrain.fill"
-        case 71, 73, 75: return "cloud.snow.fill"
-        case 95: return "cloud.bolt.rain.fill"
+        case 61, 63, 65, 80, 81, 82: return "cloud.heavyrain.fill"
+        case 71, 73, 75, 77, 85, 86, 66, 67, 56, 57: return "cloud.snow.fill"
+        case 95, 96, 99: return "cloud.bolt.rain.fill"
         default: return "questionmark.circle.dashed"
         }//:end switch
     }//:end icon func
