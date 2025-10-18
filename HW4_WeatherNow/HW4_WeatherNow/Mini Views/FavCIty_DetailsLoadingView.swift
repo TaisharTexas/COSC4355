@@ -18,19 +18,21 @@ struct FavCity_DetailsLoadingView: View {
     
     var body: some View {
         HStack {
+            //: the info that stays in the cache is put up here
             VStack(alignment: .leading) {
                 Text(city.name)
-                    .font(.largeTitle)
+                    .appFont(.largeTitle)
                     .foregroundColor(Color.wTextHeader)
                 Text(city.country)
-                    .font(.subheadline)
+                    .appFont(.subheadline)
                     .foregroundColor(Color.wTextSubHeader)
                 Text("\(city.latitude), \(city.longitude)")
-                    .font(.footnote)
+                    .appFont(.footnote)
                     .foregroundColor(.wTextBody)
-            }
+            }//: end Vstack
             Spacer()
             
+            // loading circle
             if isLoading {
                 ProgressView()
                     .progressViewStyle(.circular)
@@ -38,7 +40,7 @@ struct FavCity_DetailsLoadingView: View {
                     .scaleEffect(1.2)
                     .tint(.wTextHeader)
             }
-        }
+        }//: end Hstack
         .frame(maxWidth: .infinity, minHeight: 50)
         .padding()
         .background(

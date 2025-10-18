@@ -8,6 +8,9 @@
 import Foundation
 import SwiftUI
 
+/**
+ has settings for imperial/metric units, light/dark mode, and data reset (erases all favorites and api caches so I dont have to delete and relaunch app to test stuff)
+ */
 struct SettingsView: View {
     @AppStorage("selectedColorScheme") private var selectedScheme = "light"
     @AppStorage("temperatureUnit") private var tempUnit = "celsius"

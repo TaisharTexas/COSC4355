@@ -30,6 +30,7 @@ struct WeatherData: Codable {
     let timezone: String
     let hourly: HourlyData
     let current: CurrentData?
+    let daily: DailyData?
     
     struct HourlyData: Codable {
         let time: [String]
@@ -42,6 +43,14 @@ struct WeatherData: Codable {
     struct CurrentData: Codable {
         let temperature_2m: Double
         let weathercode: Int
+        let precipitation_probability: Int?
+        let windspeed_10m: Double?
+    }
+    
+    struct DailyData: Codable {
+        let time: [String]
+        let temperature_2m_max: [Double]
+        let temperature_2m_min: [Double]
     }
 }
 
@@ -58,7 +67,7 @@ final class WeatherAPIService: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var weatherCache: [Int: WeatherData] = [:] {
         didSet {
-            print("DEBUG: weatherCache didSet triggered, now contains \(weatherCache.count) cities")
+            print("DEBUG API: weatherCache didSet triggered, now contains \(weatherCache.count) cities")
         }
     }
     private var loadingCities: Set<Int> = []
@@ -106,11 +115,11 @@ final class WeatherAPIService: ObservableObject {
     func loadWeather(for city: City) async {
         // Check if already cached
         if weatherCache[city.id] != nil {
-            print("⚡️ Using cached weather for \(city.name)")
+            print("DEBUG API: Using cached weather for \(city.name)")
             return
         }
         
-        print("🌐 Fetching weather from API for \(city.name)")
+        print(" DEBUG API: Fetching weather from API for \(city.name)")
         // Check if already loading
         guard !loadingCities.contains(city.id) else {
             return
@@ -126,7 +135,8 @@ final class WeatherAPIService: ObservableObject {
                 URLQueryItem(name: "latitude", value: String(city.latitude)),
                 URLQueryItem(name: "longitude", value: String(city.longitude)),
                 URLQueryItem(name: "hourly", value: "temperature_2m,precipitation_probability,weathercode,windspeed_10m"),
-                URLQueryItem(name: "current", value: "temperature_2m,weathercode"),
+                URLQueryItem(name: "daily", value: "temperature_2m_max,temperature_2m_min"),
+                URLQueryItem(name: "current", value: "temperature_2m,weathercode,weathercode,precipitation_probability,windspeed_10m"),
                 URLQueryItem(name: "timezone", value: "auto"),
                 URLQueryItem(name: "forecast_days", value: "7")
             ]

@@ -8,17 +8,18 @@
 import SwiftUI
 import Charts
 
-
+/**
+ this is the generic chart view (calls the specific chart which is defined farther down)
+ */
 struct ForecastChartView: View {
     let info: CityWeatherInfo
     let forecastType: CityDetailView.Forecast
-//    let temperatureUnit: TemperatureUnit
     let unitSystem: UnitSystem
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(chartTitle)
-                .font(.headline)
+                .appFont(.headline)
                 .foregroundColor(.wTextHeader)
             
             if hasData {
@@ -66,7 +67,9 @@ struct ForecastChartView: View {
     }
 }
 
-// MARK: - Temperature Chart
+/**
+ TEMP CHART
+ */
 struct TemperatureChart: View {
     let info: CityWeatherInfo
     let unitSystem: UnitSystem
@@ -76,43 +79,40 @@ struct TemperatureChart: View {
         let temps = info.hourlyTemps(unit: unitSystem.temperatureUnit, count: 72)
         let times = info.hourlyTimes(count: 72)
         
-//        print(" DEBUG: Got \(temps.count) temps and \(times.count) times")
-//        print(" DEBUG: First 3 temps: \(temps.prefix(3))")
-//        print(" DEBUG: First 3 times: \(times.prefix(3))")
+//        print("DEBUG TEMP: Got \(temps.count) temps and \(times.count) times")
+//        print("DEBUG TEMP: First 3 temps: \(temps.prefix(3))")
+//        print("DEBUG TEMP: First 3 times: \(times.prefix(3))")
         
-        // 2. Get current time
         let now = Date()
-//        print("DEBUG: Current time is \(now)")
+//        print("DEBUG TEMP: Current time is \(now)")
         
-        // 3. Create a custom date formatter for the API's format
+        // Create a custom date formatter for the API's format
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
         formatter.timeZone = TimeZone(secondsFromGMT: 0) // UTC
         
-        // 4. Combine temps and times, filter to next 12 hours
         var dataPoints: [TempDataPoint] = []
         
         for (index, (timeString, temp)) in zip(times, temps).enumerated() {
             // Parse the time string to a Date
             guard let timeDate = formatter.date(from: timeString) else {
-//                print(" DEBUG: Failed to parse time: \(timeString)")
+//                print("DEBUG TEMP: Failed to parse time: \(timeString)")
                 continue
             }
             
-            // Only include if it's in the future and within 12 hours
             let hoursDifference = timeDate.timeIntervalSince(now) / 3600
             
             if index < 3 {
-//                print(" DEBUG: Time[\(index)]: \(timeString) -> \(timeDate), hours diff: \(hoursDifference)")
+//                print("DEBUG TEMP: Time[\(index)]: \(timeString) -> \(timeDate), hours diff: \(hoursDifference)")
             }
             
             if hoursDifference >= 0 && hoursDifference < 12 {
-                // Extract just the hour (like "14" for 2pm)
+                // Extract just the hour for the chart axies (like "14" for 2pm)
                 let calendar = Calendar.current
                 let hour = calendar.component(.hour, from: timeDate)
                 let hourString = String(format: "%02d", hour)
                 
-//                print(" DEBUG: Adding point - Hour: \(hourString), Temp: \(temp)")
+//                print("DEBUG TEMP: Adding point - Hour: \(hourString), Temp: \(temp)")
                 
                 dataPoints.append(TempDataPoint(
                     index: index,
@@ -122,16 +122,15 @@ struct TemperatureChart: View {
             }
         }
         
-//        print(" DEBUG: Total data points created: \(dataPoints.count)")
+//        print("DEBUG TEMP: Total data points created: \(dataPoints.count)")
         
         return dataPoints
     }
     
-    // Calculate min and max temperatures
+    // Calculate min and max temperatures (going to scale the chart off the min and max)
     private var minTemp: Double {
         chartData.map { $0.temperature }.min() ?? 0
     }
-    
     private var maxTemp: Double {
         chartData.map { $0.temperature }.max() ?? 100
     }
@@ -141,12 +140,12 @@ struct TemperatureChart: View {
         let padding = (maxTemp - minTemp) * 0.25 // 25% padding
         let lower = minTemp - padding
         let upper = maxTemp + padding
-//        print(" DEBUG: Temp range: \(lower)...\(upper)")
+//        print("DEBUG TEMP: Temp range: \(lower)...\(upper)")
         return lower...upper
     }
     
     var body: some View {
-//        print(" DEBUG: Rendering chart with \(chartData.count) points")
+//        print("DEBUG TEMP: Rendering chart with \(chartData.count) points")
         
         if chartData.isEmpty {
             return AnyView(
@@ -154,7 +153,7 @@ struct TemperatureChart: View {
                     .foregroundColor(.wTextBody)
                     .frame(height: 200)
                     .onAppear {
-//                        print(" DEBUG: Chart data is empty!")
+//                        print("DEBUG TEMP: Chart data is empty!")
                     }
             )
         } else {
@@ -184,36 +183,37 @@ struct TemperatureChart: View {
         }
     }
 }
-
+/**
+PRECIP CHART
+*/
 struct PrecipitationChart: View {
     let info: CityWeatherInfo
     let unitSystem: UnitSystem
     
     private var chartData: [PrecipDataPoint] {
-        // 1. Get 72 hours (3 days) of data
+        // Get 72 hours (3 days) of data
         let precipProb = info.hourlyPrecipitationProbability(count: 72)
         let times = info.hourlyTimes(count: 72)
         
-//        print(" DEBUG: Got \(precipProb.count) precipitation probabilities and \(times.count) times")
-//        print(" DEBUG: First 3 precipitation %: \(precipProb.prefix(3))")
-//        print(" DEBUG: First 3 times: \(times.prefix(3))")
+//        print("DEBUG PRECIP: Got \(precipProb.count) precipitation probabilities and \(times.count) times")
+//        print("DEBUG PRECIP: First 3 precipitation %: \(precipProb.prefix(3))")
+//        print("DEBUG PRECIP: First 3 times: \(times.prefix(3))")
         
-        // 2. Get current time
         let now = Date()
-//        print(" DEBUG: Current time is \(now)")
+//        print("DEBUG PRECIP: Current time is \(now)")
         
-        // 3. Create a custom date formatter for the API's format
+        // Create a custom date formatter for the API's format
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
         formatter.timeZone = TimeZone(secondsFromGMT: 0) // UTC
         
-        // 4. Combine precipitation probability and times, filter to next 12 hours
+        // Combine precipitation probability and times, filter to next 12 hours
         var dataPoints: [PrecipDataPoint] = []
         
         for (index, (timeString, probability)) in zip(times, precipProb).enumerated() {
             // Parse the time string to a Date
             guard let timeDate = formatter.date(from: timeString) else {
-//                print(" DEBUG: Failed to parse time: \(timeString)")
+//                print("DEBUG PRECIP: Failed to parse time: \(timeString)")
                 continue
             }
             
@@ -221,7 +221,7 @@ struct PrecipitationChart: View {
             let hoursDifference = timeDate.timeIntervalSince(now) / 3600
             
             if index < 3 {
-//                print(" DEBUG: Time[\(index)]: \(timeString) -> \(timeDate), hours diff: \(hoursDifference)")
+//                print("DEBUG PRECIP: Time[\(index)]: \(timeString) -> \(timeDate), hours diff: \(hoursDifference)")
             }
             
             if hoursDifference >= 0 && hoursDifference < 12 {
@@ -230,17 +230,17 @@ struct PrecipitationChart: View {
                 let hour = calendar.component(.hour, from: timeDate)
                 let hourString = String(format: "%02d", hour)
                 
-//                print("DEBUG: Adding point - Hour: \(hourString), Precipitation %: \(probability)")
+//                print("DEBUG PRECIP: Adding point - Hour: \(hourString), Precipitation %: \(probability)")
                 
                 dataPoints.append(PrecipDataPoint(
                     index: index,
                     hour: hourString,
-                    precipitation: Double(probability) // Convert Int to Double for chart
+                    precipitation: Double(probability)
                 ))
             }
         }
         
-//        print(" DEBUG: Total data points created: \(dataPoints.count)")
+//        print("DEBUG PRECIP: Total data pts created: \(dataPoints.count)")
         
         return dataPoints
     }
@@ -251,7 +251,7 @@ struct PrecipitationChart: View {
     }
     
     var body: some View {
-//        print(" DEBUG: Rendering precipitation chart with \(chartData.count) points")
+//        print("DEBUG PRECIP: showing precipitation chart with \(chartData.count) points")
         
         if chartData.isEmpty {
             return AnyView(
@@ -259,7 +259,7 @@ struct PrecipitationChart: View {
                     .foregroundColor(.wTextBody)
                     .frame(height: 200)
                     .onAppear {
-//                        print(" DEBUG: Precipitation chart data is empty!")
+//                        print("DEBUG PRECIP: Precipitation chart data is empty!")
                     }
             )
         } else {
@@ -276,42 +276,43 @@ struct PrecipitationChart: View {
                 .chartXAxisLabel("Hour")
                 .frame(height: 200)
                 .onAppear {
-//                    print(" DEBUG: Precipitation chart appeared with \(chartData.count) points")
+//                    print("DEBUG PRECIP: Precipitation chart appeared with \(chartData.count) points")
                 }
             )
         }
     }
 }
 
+/**
+ WIND CHART
+ */
 struct WindChart: View {
     let info: CityWeatherInfo
     let unitSystem: UnitSystem
     
     private var chartData: [WindDataPoint] {
-        // 1. Get 72 hours (3 days) of data
+        // Get 72 hours (3 days) of data
         let windSpeeds = info.hourlyWindSpeed(unitSystem: unitSystem, count: 72)
         let times = info.hourlyTimes(count: 72)
         
-//        print(" DEBUG: Got \(windSpeeds.count) wind speeds and \(times.count) times")
-//        print(" DEBUG: First 3 wind speeds: \(windSpeeds.prefix(3))")
-//        print(" DEBUG: First 3 times: \(times.prefix(3))")
+//        print("DEBUG WIND: Got \(windSpeeds.count) wind speeds and \(times.count) times")
+//        print("DEBUG WIND: First 3 wind speeds: \(windSpeeds.prefix(3))")
+//        print("DEBUG WIND: First 3 times: \(times.prefix(3))")
         
-        // 2. Get current time
         let now = Date()
-//        print(" DEBUG: Current time is \(now)")
+//        print("DEBUG WIND: Current time is \(now)")
         
-        // 3. Create a custom date formatter for the API's format
+        // Create a custom date formatter for the API's format
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd'T'HH:mm"
         formatter.timeZone = TimeZone(secondsFromGMT: 0) // UTC
         
-        // 4. Combine wind speeds and times, filter to next 12 hours
         var dataPoints: [WindDataPoint] = []
         
         for (index, (timeString, speed)) in zip(times, windSpeeds).enumerated() {
             // Parse the time string to a Date
             guard let timeDate = formatter.date(from: timeString) else {
-//                print(" DEBUG: Failed to parse time: \(timeString)")
+//                print("DEBUG WIND: Failed to parse time: \(timeString)")
                 continue
             }
             
@@ -319,7 +320,7 @@ struct WindChart: View {
             let hoursDifference = timeDate.timeIntervalSince(now) / 3600
             
             if index < 3 {
-//                print("📊 DEBUG: Time[\(index)]: \(timeString) -> \(timeDate), hours diff: \(hoursDifference)")
+//                print("DEBUG WIND: Time[\(index)]: \(timeString) -> \(timeDate), hours diff: \(hoursDifference)")
             }
             
             if hoursDifference >= 0 && hoursDifference < 12 {
@@ -328,7 +329,7 @@ struct WindChart: View {
                 let hour = calendar.component(.hour, from: timeDate)
                 let hourString = String(format: "%02d", hour)
                 
-//                print(" DEBUG: Adding point - Hour: \(hourString), Wind: \(speed)")
+//                print("DEBUG WIND: Adding point - Hour: \(hourString), Wind: \(speed)")
                 
                 dataPoints.append(WindDataPoint(
                     index: index,
@@ -338,12 +339,12 @@ struct WindChart: View {
             }
         }
         
-//        print(" DEBUG: Total data points created: \(dataPoints.count)")
+//        print("DEBUG WIND: Total data points created: \(dataPoints.count)")
         
         return dataPoints
     }
     
-    // Calculate min and max wind speeds
+    // Calculate min and max wind speeds (to scale chart from)
     private var minWind: Double {
         chartData.map { $0.windSpeed }.min() ?? 0
     }
@@ -357,12 +358,12 @@ struct WindChart: View {
         let padding = (maxWind - minWind) * 0.1 // 10% padding
         // Keep minimum at 0 for wind speed (can't be negative)
         let upper = maxWind + padding
-//        print("📊 DEBUG: Wind range: 0...\(upper)")
+//        print("DEBUG WIND: Wind range: 0...\(upper)")
         return 0...upper
     }
     
     var body: some View {
-//        print(" DEBUG: Rendering wind chart with \(chartData.count) points")
+//        print("DEBUG WIND: Rendering wind chart with \(chartData.count) points")
         
         if chartData.isEmpty {
             return AnyView(
@@ -370,7 +371,7 @@ struct WindChart: View {
                     .foregroundColor(.wTextBody)
                     .frame(height: 200)
                     .onAppear {
-//                        print(" DEBUG: Wind chart data is empty!")
+//                        print("DEBUG WIND: Wind chart data is empty!")
                     }
             )
         } else {
@@ -394,7 +395,7 @@ struct WindChart: View {
                 .chartXAxisLabel("Hour")
                 .frame(height: 200)
                 .onAppear {
-//                    print("DEBUG: Wind chart appeared with \(chartData.count) points")
+//                    print("DEBUG WIND: Wind chart appeared with \(chartData.count) points")
                 }
             )
         }

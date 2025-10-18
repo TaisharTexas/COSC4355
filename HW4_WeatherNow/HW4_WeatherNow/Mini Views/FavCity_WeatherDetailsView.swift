@@ -24,42 +24,57 @@ struct FavCity_WeatherDetailsView: View {
         currentUnitSystem.temperatureUnit
     }
     
+    
     var body: some View {
         HStack {
+            // Left side of card
             VStack(alignment: .leading) {
+                //City Name
                 Text(info.city.name)
-                    .font(.largeTitle)
+                    .appFont(.title)
                     .foregroundColor(Color.wTextHeader)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                //If city is in US, show state, otherwise show Country
                 if info.city.country == "United States", let admin = info.city.admin1 {
                     Text(admin)
-                        .font(.title2)
+                        .appFont(.headline)
                         .foregroundColor(Color.wTextSubHeader)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
                 }
                 else{
                     Text(info.city.country)
-                        .font(.title2)
+                        .appFont(.title2)
                         .foregroundColor(Color.wTextSubHeader)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.5)
                 }
+                // Lat/Lon for city
                 Text("\(info.city.latitude), \(info.city.longitude)")
-                    .font(.footnote)
+                    .appFont(.coordinates)
                     .foregroundColor(.wTextBody)
-            }
+            }//: end VStack
             Spacer()
             
+            // Right side of card
             VStack {
                 HStack {
+                    // Current Temp of city
                     Text("\(info.currentTemp(unit: temperatureUnit) ?? 0)\(info.unitSymbol(for: temperatureUnit))")
-                        .font(.largeTitle)
+                        .appFont(.largeTitle)
                         .foregroundColor(.wTextHeader)
+                    // icon reflecting current weather (from weathercode)
                     Image(systemName: info.icon)
                         .foregroundColor(.wTextHeader)
-                        .font(.largeTitle)
+                        .appFont(.title)
                 }
+                // description of weather (from weathercode)
                 Text(info.description)
-                    .font(.caption)
+                    .appFont(.caption)
                     .foregroundColor(.wTextBody)
-            }
-        }
+            }//: end VStack
+        }//: end HStack
         .frame(maxWidth: .infinity, minHeight: 50)
         .padding()
         .background(

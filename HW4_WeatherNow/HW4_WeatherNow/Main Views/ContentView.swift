@@ -35,7 +35,7 @@ struct ContentView: View {
                 //Title and Settings
                 HStack{
                     Text("Weather App")
-                        .font(.largeTitle)
+                        .appFont(.largeTitle)
                         .bold()
                         .foregroundColor(.wTextHeader)
                     
@@ -43,7 +43,7 @@ struct ContentView: View {
                     NavigationLink(destination: SettingsView()) {
                         Image(systemName: "gearshape.fill")
                             .foregroundColor(.wAccent.opacity(0.8))
-                            .font(.title)
+                            .appFont(.title)
                     }
                 }//: Title HStack Block
                 
@@ -73,6 +73,7 @@ struct ContentView: View {
                             .foregroundColor(.wTextSubHeader)
                         Text("Search for a city")
                             .foregroundColor(.wTextSubHeader)
+                            .appFont(.body)
                         Spacer()
                     }
                     .padding()
@@ -109,11 +110,13 @@ struct ContentView: View {
                                         Text("Enter city name")
                                             .foregroundColor(.wTextSubHeader.opacity(0.6))
                                             .padding(.leading, 4)
+                                            .appFont(.body)
                                     }
                                     TextField("", text: $searchText)
                                         .foregroundStyle(.wTextSubHeader)
                                         .autocapitalization(.none)
                                         .focused($isSearchFieldFocused)
+                                        .appFont(.body)
                                         .onSubmit {
                                             Task {
                                                 await service.searchCities(query: searchText)
@@ -149,7 +152,7 @@ struct ContentView: View {
                             }) {
                                 Image(systemName: "xmark.circle")
                                     .foregroundColor(.wTextBody.opacity(0.8))
-                                    .font(.largeTitle)
+                                    .appFont(.largeTitle)
                             }
                         }//: Outer Hstack
                         .padding()
@@ -157,6 +160,7 @@ struct ContentView: View {
                         // Loading indicator
                         if service.isLoading {
                             ProgressView("Loading...")
+                                .appFont(.callout)
                         }
                         
                         // Error message
@@ -165,12 +169,13 @@ struct ContentView: View {
                                 .foregroundColor(.red)
                                 .multilineTextAlignment(.center)
                                 .padding()
+                                .appFont(.callout)
                         }
                         
                         // Search Results
                         if !service.searchResults.isEmpty {
                             Text("Search Results:")
-                                .font(.headline)
+                                .appFont(.headline)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 .padding(.horizontal)
                             
@@ -180,11 +185,11 @@ struct ContentView: View {
                                         NavigationLink(value: city) {
                                             VStack(alignment: .leading, spacing: 4) {
                                                 Text("\(city.name)")
-                                                    .font(.headline)
+                                                    .appFont(.headline)
                                                 Text("\(city.displayName)")
-                                                    .font(.subheadline)
+                                                    .appFont(.subheadline)
                                                 Text("\(city.latitude), \(city.longitude)")
-                                                    .font(.caption)
+                                                    .appFont(.coordinates)
                                                     .foregroundColor(.secondary)
                                             }
                                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -201,6 +206,7 @@ struct ContentView: View {
                             Spacer()
                             Text("No results found")
                                 .foregroundColor(.gray)
+                                .appFont(.headline)
                             Spacer()
                         } else {
                             Spacer()
