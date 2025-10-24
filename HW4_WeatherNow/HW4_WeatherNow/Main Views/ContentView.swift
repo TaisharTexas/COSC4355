@@ -154,7 +154,7 @@ struct ContentView: View {
                                     .foregroundColor(.wTextBody.opacity(0.8))
                                     .appFont(.largeTitle)
                             }
-                        }//: Outer Hstack
+                        }//: Outer Hstack (search block)
                         .padding()
                         
                         // Loading indicator

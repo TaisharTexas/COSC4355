@@ -10,14 +10,17 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         TabView{
-            Tab("Score Match", systemImage: "list.bullet.below.rectangle"){
+            Tab("Score Match", systemImage: "slider.horizontal.2.square"){
                 ScoreView()
             }
-            Tab("Team Data", systemImage: "list.clipboard.fill"){
+            Tab("Team Data", systemImage: "list.bullet.rectangle.fill"){
                 TeamView()
             }
             Tab("Event Data", systemImage: "globe.fill"){
                 EventView()
+            }
+            Tab("Settings", systemImage: "gearshape.fill"){
+                SettingsView()
             }
         }
         .tint(Color("ftc_orange"))

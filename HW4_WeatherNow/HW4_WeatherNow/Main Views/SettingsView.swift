@@ -26,7 +26,7 @@ struct SettingsView: View {
                     Text("Weather Now App")
                     Text("Version 1.0")
                     Text("Built by Andrew Lee")
-                }
+                }{
                 Section(header: Text("Appearance")) {
                     Picker("Theme", selection: $selectedScheme) {
                         Text("Light").tag("light")
