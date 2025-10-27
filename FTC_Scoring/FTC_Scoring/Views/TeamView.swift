@@ -8,17 +8,33 @@
 import SwiftUI
 
 struct TeamView: View {
+    
+    @State private var viewMode: DataViewMode = .report
+    
+    enum DataViewMode {
+        case analysis, report
+    }
+    
     var body: some View {
-        ScrollView{
-            VStack(spacing:20){
-                Error404Block(
-                    pageName: "Team Data",
-                    message: "Page coming soon",
-                    size: .large
-                )
-            }
+        
+        Picker("View Mode", selection: $viewMode) {
+            Text("Report").tag(DataViewMode.report)
+            Text("Analysis").tag(DataViewMode.analysis)
         }
-        .navigationTitle("Event Data")
+        .pickerStyle(SegmentedPickerStyle())
+        .padding(.horizontal)
+        
+        Group{
+            switch viewMode {
+            case .analysis:
+                TeamAnalysisView()
+            case .report:
+                TeamReportView()
+                
+            }
+        }//: end view toggle
+        Spacer()
+        
     }
 }
 

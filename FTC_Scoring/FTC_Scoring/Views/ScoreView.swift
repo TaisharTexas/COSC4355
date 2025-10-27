@@ -10,6 +10,15 @@ import SwiftUI
 
 
 struct ScoreView: View {
+    
+    /**
+     Need to add way to track phases in the match for standard game match
+        probably parallel timers to track when auto ends, when teleop ends, and when whole game ends to unlock the tabs
+        unlock save button when match ends
+     For custom, let all the tabs be unlocked and save button available.
+     */
+    
+    
     @StateObject private var matchData = MatchData()
     
     @State private var matchMode: GameMode = .standard
@@ -137,6 +146,8 @@ struct ScoreView: View {
             
     }// end Body View
     
+    
+    // TIMER HELPER FUNCTIONS
     func startTimer() {
         guard !isTimerRunning else { return }
         isTimerRunning = true

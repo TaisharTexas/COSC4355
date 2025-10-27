@@ -51,10 +51,23 @@ struct ScoreEndgame: View{
                                 .cornerRadius(8)
                         }
                     }
-                }
+                }//: end hstack
                 .padding(.horizontal)
+            }//: end for loop
+            
+            Divider()
+            
+            HStack{
+                
+                Spacer()
+                Button("Save Match", action: {
+                    print("save match button pressed")
+                    //eventually need to pop up match summary/confirm save button and then save a match record to the memory (non volitile)
+                })
+                .buttonStyle(.glassProminent)
+                Spacer()
             }
             
-        }
+        }//: end Vstack
     }
 }
