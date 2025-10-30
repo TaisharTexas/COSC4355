@@ -17,8 +17,9 @@ struct SettingsView: View {
                 }//: end section: about scoring
                 Section("Team Info"){
                     HStack{
-                        VStack{
+                        VStack(alignment: .leading){
                             Text("Team Number: 8668")
+                            Text("Team Name: Should Be Fine")
                         }
                         Spacer()
                         Button(action: {

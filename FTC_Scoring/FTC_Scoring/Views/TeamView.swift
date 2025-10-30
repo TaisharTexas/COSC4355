@@ -7,6 +7,17 @@
 
 import SwiftUI
 
+/**
+ Need to redefine button style to use orange
+ 
+ Add ranking points calc to stats. distingush between small and large triangle scores 
+ 
+ Need to change structure where each session can be expanded to show the list of matches
+    the entire session can be included or not
+    individual matches can be included or not
+ Add edit mode where sessions and/or matches can be deleted from memory (warn user)
+ */
+
 struct TeamView: View {
     
     @State private var viewMode: DataViewMode = .report
@@ -27,7 +38,7 @@ struct TeamView: View {
         Group{
             switch viewMode {
             case .analysis:
-                TeamAnalysisView()
+                TeamAnalysisView_Self()
             case .report:
                 TeamReportView()
                 

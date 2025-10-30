@@ -8,6 +8,11 @@
 import Foundation
 import Combine
 
+/**
+ this is how I plan on keeping match records that are recorded locally...
+ not sure if it will map directly to the api match data or not, may need to make a converter so that local matches and api matches can be both used for analysis
+ */
+
 struct MatchRecord: Codable, Identifiable{
     let id = UUID()
     let teamNumber: String

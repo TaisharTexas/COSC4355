@@ -7,7 +7,17 @@
 
 import SwiftUI
 
-struct DataCard: View {
+/**
+ Need to redefine button style to use orange
+ 
+ Add ranking points calc to stats. distingush between small and large triangle scores
+
+ */
+
+/**
+ Probably also temp design
+ */
+private struct DataCard: View {
     let title: String
     let data: String
     
@@ -32,26 +42,11 @@ struct DataCard: View {
     }
 }//: end DataCard element
 
-struct TeamAnalysisView: View{
+struct TeamAnalysisView_Self: View{
     
     var body: some View {
-        VStack(alignment: .leading){
-            Text("Select an Event:")
-                .font(.caption)
-            HStack{
-                Text("Worlds Championship 2025")
-                    .font(.title)
-                    .minimumScaleFactor(0.5)
-                    .lineLimit(1)
-                Spacer()
-                Button("Query Event", action: {
-                    print("edit event button pressed")
-                })
-                .buttonStyle(.glass)
-            }
-        }
-        .padding(.horizontal)
-        
+
+            
         Divider()
         
         VStack(spacing: 16) {
@@ -79,7 +74,10 @@ struct TeamAnalysisView: View{
                 .fill(Color(.systemGray6))
         )
         .padding()
-    
     }//: end body view
 
+}
+
+#Preview{
+    TeamAnalysisView_Self()
 }
