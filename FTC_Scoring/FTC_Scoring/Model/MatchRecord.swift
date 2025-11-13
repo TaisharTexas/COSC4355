@@ -14,7 +14,7 @@ import Combine
  */
 
 struct MatchRecord: Codable, Identifiable{
-    let id = UUID()
+    var id = UUID()
     let teamNumber: String
     let matchNumber: Int
     let session: String
