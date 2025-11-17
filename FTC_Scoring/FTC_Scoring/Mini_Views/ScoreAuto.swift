@@ -72,7 +72,7 @@ struct ScoreAuto: View{
         
         ScrollView{
             VStack(spacing: 12) {
-                ForEach(0..<8, id: \.self) { index in
+                ForEach(0..<9, id: \.self) { index in
                     HStack {
                         Text("Gate \(index + 1)")
                             .font(.headline)

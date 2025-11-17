@@ -35,9 +35,9 @@ class MatchData: ObservableObject{
     @Published var classifiedArtifacts = 0
     @Published var robot1Leave = true
     @Published var robot2Leave = false
-    @Published var gateStatesAuto: [GateState] = Array(repeating: .none, count: 8)
+    @Published var gateStatesAuto: [GateState] = Array(repeating: .none, count: 9)
     //TELE
-    @Published var gateStatesTele: [GateState] = Array(repeating: .none, count: 8)
+    @Published var gateStatesTele: [GateState] = Array(repeating: .none, count: 9)
     @Published var depotArtifacts = 0
     //ENDGAME
     @Published var robotBaseState: [BaseState] = Array(repeating: .none, count: 2)
@@ -79,8 +79,8 @@ class MatchData: ObservableObject{
         depotArtifacts = 0
         robot1Leave = false
         robot2Leave = false
-        gateStatesAuto = Array(repeating: .none, count: 8)
-        gateStatesTele = Array(repeating: .none, count: 8)
+        gateStatesAuto = Array(repeating: .none, count: 9)
+        gateStatesTele = Array(repeating: .none, count: 9)
         robotBaseState = Array(repeating: .none, count: 2)
     }
 }

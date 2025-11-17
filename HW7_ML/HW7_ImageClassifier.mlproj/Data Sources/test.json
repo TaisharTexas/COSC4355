@@ -1,0 +1,31 @@
+{
+  "activityEntities" : [
+    "dataSourceCreated",
+    [
+      {
+        "createdDate" : "2025-11-17T20:48:42Z",
+        "event" : "dataSourceCreated",
+        "id" : "F99932EC-086F-4012-AF30-7A8F83858333",
+        "subtitle" : "test",
+        "title" : "Data Source Created"
+      }
+    ]
+  ],
+  "createdDate" : "2025-11-17T20:48:42Z",
+  "dataPathRelativeToProjectURL" : "../UbiqHW/test/",
+  "dataResult" : {
+    "createdDate" : "2025-11-17T20:48:42Z",
+    "dataSourceID" : "A308891F-CAF3-4D3C-9DAB-4324D7C74FDC",
+    "dataURL" : "file:///Users/andrew/COSC4355/HW7_ML/UbiqHW/test/"
+  },
+  "dataURL" : "file:///Users/andrew/COSC4355/HW7_ML/UbiqHW/test/",
+  "experimentIDs" : [
+    "6D1E8C43-02BD-4013-9AB6-37B6CC916155"
+  ],
+  "id" : "A308891F-CAF3-4D3C-9DAB-4324D7C74FDC",
+  "modifiedDate" : "2025-11-17T20:48:42Z",
+  "pathType" : 0,
+  "preferredFilename" : "test",
+  "title" : "test",
+  "version" : "1.0"
+}

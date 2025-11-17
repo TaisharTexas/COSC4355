@@ -1,0 +1,51 @@
+{
+  "activityEntities" : [
+    "dataSourceCreated",
+    [
+      {
+        "createdDate" : "2025-11-17T20:48:36Z",
+        "event" : "dataSourceCreated",
+        "id" : "853C18F4-6D0D-4F1E-B3BC-D0847BA1CFBD",
+        "subtitle" : "train",
+        "title" : "Data Source Created"
+      }
+    ],
+    "dataSourceMetrics",
+    [
+      {
+        "createdDate" : "2025-11-17T20:48:48Z",
+        "event" : "dataSourceMetrics",
+        "id" : "95822E3E-3230-43CD-800E-C49F7F564B6E",
+        "subtitle" : "4 Classes, 440 Items",
+        "title" : "Data Summary"
+      }
+    ],
+    "dataSourceTrainingStarted",
+    [
+      {
+        "createdDate" : "2025-11-17T20:48:48Z",
+        "event" : "dataSourceTrainingStarted",
+        "id" : "E9909A30-5068-40A8-B305-CC8BBBF94F25",
+        "subtitle" : "HW7_ImageClassifier 1",
+        "title" : "Used By"
+      }
+    ]
+  ],
+  "createdDate" : "2025-11-17T20:48:36Z",
+  "dataPathRelativeToProjectURL" : "../UbiqHW/train/",
+  "dataResult" : {
+    "createdDate" : "2025-11-17T20:48:36Z",
+    "dataSourceID" : "EEC0B1D8-3B1C-46C9-B025-0DA50DDEE939",
+    "dataURL" : "file:///Users/andrew/COSC4355/HW7_ML/UbiqHW/train/"
+  },
+  "dataURL" : "file:///Users/andrew/COSC4355/HW7_ML/UbiqHW/train/",
+  "experimentIDs" : [
+    "6D1E8C43-02BD-4013-9AB6-37B6CC916155"
+  ],
+  "id" : "EEC0B1D8-3B1C-46C9-B025-0DA50DDEE939",
+  "modifiedDate" : "2025-11-17T20:48:48Z",
+  "pathType" : 0,
+  "preferredFilename" : "train",
+  "title" : "train",
+  "version" : "1.0"
+}

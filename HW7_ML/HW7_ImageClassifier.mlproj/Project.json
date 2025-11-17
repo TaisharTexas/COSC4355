@@ -1,0 +1,29 @@
+{
+  "activityEntities" : [
+    "projectCreated",
+    [
+      {
+        "createdDate" : "2025-11-17T20:48:27Z",
+        "event" : "projectCreated",
+        "id" : "38A9E70A-5A6B-40C6-B2BD-8F202517BF30",
+        "subtitle" : "HW7_ImageClassifier",
+        "title" : "Project Created"
+      }
+    ]
+  ],
+  "authorName" : "Andrew Lee",
+  "createdDate" : "2025-11-17T20:48:27Z",
+  "description" : "",
+  "id" : "097E4CAC-675B-4B2C-8E34-57BCF34CB3C0",
+  "license" : "",
+  "location" : "",
+  "modifiedDate" : "2025-11-17T20:48:27Z",
+  "projectName" : "HW7_ImageClassifier",
+  "settingsEntity" : {
+    "snapshotOnExtendTraining" : true,
+    "snapshotOnResumeTraining" : false
+  },
+  "taskType" : "imageClassifier",
+  "title" : "Image Classification",
+  "version" : "1.1"
+}

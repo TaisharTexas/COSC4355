@@ -1,0 +1,31 @@
+{
+  "activityEntities" : [
+    "dataSourceCreated",
+    [
+      {
+        "createdDate" : "2025-11-17T20:48:39Z",
+        "event" : "dataSourceCreated",
+        "id" : "019727AE-6453-4624-BC1F-33F597385CCA",
+        "subtitle" : "valid",
+        "title" : "Data Source Created"
+      }
+    ]
+  ],
+  "createdDate" : "2025-11-17T20:48:39Z",
+  "dataPathRelativeToProjectURL" : "../UbiqHW/valid/",
+  "dataResult" : {
+    "createdDate" : "2025-11-17T20:48:39Z",
+    "dataSourceID" : "E563D983-14ED-4888-BB46-90BACF379C55",
+    "dataURL" : "file:///Users/andrew/COSC4355/HW7_ML/UbiqHW/valid/"
+  },
+  "dataURL" : "file:///Users/andrew/COSC4355/HW7_ML/UbiqHW/valid/",
+  "experimentIDs" : [
+    "6D1E8C43-02BD-4013-9AB6-37B6CC916155"
+  ],
+  "id" : "E563D983-14ED-4888-BB46-90BACF379C55",
+  "modifiedDate" : "2025-11-17T20:48:39Z",
+  "pathType" : 0,
+  "preferredFilename" : "valid",
+  "title" : "valid",
+  "version" : "1.0"
+}
