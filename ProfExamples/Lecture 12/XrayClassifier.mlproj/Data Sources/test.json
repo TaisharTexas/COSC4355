@@ -1,0 +1,31 @@
+{
+  "activityEntities" : [
+    "dataSourceCreated",
+    [
+      {
+        "createdDate" : "2025-11-13T18:58:35Z",
+        "event" : "dataSourceCreated",
+        "id" : "EF07C9F7-71D8-4793-B85F-37020EACD65F",
+        "subtitle" : "test",
+        "title" : "Data Source Created"
+      }
+    ]
+  ],
+  "createdDate" : "2025-11-13T18:58:35Z",
+  "dataPathRelativeToProjectURL" : "../XrayClassification/test/",
+  "dataResult" : {
+    "createdDate" : "2025-11-13T18:58:35Z",
+    "dataSourceID" : "2FD5622F-3855-4E81-B9F4-2297582980B3",
+    "dataURL" : "file:///Users/ioannispavlidis/Work/Courses/2025/Ubiquitous-Computing-2025/Lectures/Lecture%209/XrayClassification/test/"
+  },
+  "dataURL" : "file:///Users/ioannispavlidis/Work/Courses/2025/Ubiquitous-Computing-2025/Lectures/Lecture%209/XrayClassification/test/",
+  "experimentIDs" : [
+    "5D95EC37-3757-4D0B-8914-E65DE88F4AFB"
+  ],
+  "id" : "2FD5622F-3855-4E81-B9F4-2297582980B3",
+  "modifiedDate" : "2025-11-13T18:58:35Z",
+  "pathType" : 0,
+  "preferredFilename" : "test",
+  "title" : "test",
+  "version" : "1.0"
+}

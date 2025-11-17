@@ -1,0 +1,51 @@
+{
+  "activityEntities" : [
+    "dataSourceTrainingStarted",
+    [
+      {
+        "createdDate" : "2025-11-13T18:58:54Z",
+        "event" : "dataSourceTrainingStarted",
+        "id" : "8A9D5114-CE1A-496A-91EE-39C96B7AD455",
+        "subtitle" : "XrayClassifier 1",
+        "title" : "Used By"
+      }
+    ],
+    "dataSourceCreated",
+    [
+      {
+        "createdDate" : "2025-11-13T18:57:48Z",
+        "event" : "dataSourceCreated",
+        "id" : "4CC6F679-4A82-4677-B88A-D8CC8C5BA78D",
+        "subtitle" : "train",
+        "title" : "Data Source Created"
+      }
+    ],
+    "dataSourceMetrics",
+    [
+      {
+        "createdDate" : "2025-11-13T18:58:54Z",
+        "event" : "dataSourceMetrics",
+        "id" : "387C48BF-9727-470F-B6DD-9F43643A4952",
+        "subtitle" : "4 Classes, 175 Items",
+        "title" : "Data Summary"
+      }
+    ]
+  ],
+  "createdDate" : "2025-11-13T18:57:48Z",
+  "dataPathRelativeToProjectURL" : "../XrayClassification/train/",
+  "dataResult" : {
+    "createdDate" : "2025-11-13T18:57:48Z",
+    "dataSourceID" : "1521C84C-2E61-4FCA-97A4-671983A1564C",
+    "dataURL" : "file:///Users/ioannispavlidis/Work/Courses/2025/Ubiquitous-Computing-2025/Lectures/Lecture%209/XrayClassification/train/"
+  },
+  "dataURL" : "file:///Users/ioannispavlidis/Work/Courses/2025/Ubiquitous-Computing-2025/Lectures/Lecture%209/XrayClassification/train/",
+  "experimentIDs" : [
+    "5D95EC37-3757-4D0B-8914-E65DE88F4AFB"
+  ],
+  "id" : "1521C84C-2E61-4FCA-97A4-671983A1564C",
+  "modifiedDate" : "2025-11-13T18:58:54Z",
+  "pathType" : 0,
+  "preferredFilename" : "train",
+  "title" : "train",
+  "version" : "1.0"
+}

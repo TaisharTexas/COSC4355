@@ -1,0 +1,29 @@
+{
+  "activityEntities" : [
+    "projectCreated",
+    [
+      {
+        "createdDate" : "2025-11-13T18:57:30Z",
+        "event" : "projectCreated",
+        "id" : "7C284EFB-9F52-4A28-9925-D0FAC9D1F6A0",
+        "subtitle" : "XrayClassifier",
+        "title" : "Project Created"
+      }
+    ]
+  ],
+  "authorName" : "Ioannis Pavlidis",
+  "createdDate" : "2025-11-13T18:57:30Z",
+  "description" : "",
+  "id" : "6E4811A8-79F0-4543-9406-84BBAD92E457",
+  "license" : "",
+  "location" : "",
+  "modifiedDate" : "2025-11-13T18:57:30Z",
+  "projectName" : "XrayClassifier",
+  "settingsEntity" : {
+    "snapshotOnExtendTraining" : true,
+    "snapshotOnResumeTraining" : false
+  },
+  "taskType" : "imageClassifier",
+  "title" : "Image Classification",
+  "version" : "1.1"
+}
