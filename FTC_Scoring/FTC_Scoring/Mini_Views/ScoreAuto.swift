@@ -18,19 +18,19 @@ struct ScoreAuto: View{
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
                 HStack{
-                    Button(action: { if matchData.overflowArtifacts > 0 { matchData.overflowArtifacts -= 1 } }) {
+                    Button(action: { if matchData.overflowArtifactsAuto > 0 { matchData.overflowArtifactsAuto -= 1 } }) {
                         Image(systemName: "minus")
                             .frame(width: 37, height: 37)
                             .background(Color.gray.opacity(0.2))
                             .foregroundColor(.ftcOrange)
                             .cornerRadius(8)
                     }
-                    Text("\(matchData.overflowArtifacts)")
+                    Text("\(matchData.overflowArtifactsAuto)")
                         .font(.title2)
                         .frame(width: 20)
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
-                    Button(action: { matchData.overflowArtifacts += 1 }) {
+                    Button(action: { matchData.overflowArtifactsAuto += 1 }) {
                         Image(systemName: "plus")
                             .frame(width: 37, height: 37)
                             .background(Color.gray.opacity(0.2))
@@ -45,19 +45,19 @@ struct ScoreAuto: View{
                     .lineLimit(1)
                     .minimumScaleFactor(0.5)
                 HStack{
-                    Button(action: { if matchData.classifiedArtifacts > 0 { matchData.classifiedArtifacts -= 1 } }) {
+                    Button(action: { if matchData.classifiedArtifactsAuto > 0 { matchData.classifiedArtifactsAuto -= 1 } }) {
                         Image(systemName: "minus")
                             .frame(width: 37, height: 37)
                             .background(Color.gray.opacity(0.2))
                             .foregroundColor(.ftcOrange)
                             .cornerRadius(8)
                     }
-                    Text("\(matchData.classifiedArtifacts)")
+                    Text("\(matchData.classifiedArtifactsAuto)")
                         .font(.title2)
                         .frame(width: 20)
                         .lineLimit(1)
                         .minimumScaleFactor(0.5)
-                    Button(action: { matchData.classifiedArtifacts += 1 }) {
+                    Button(action: { matchData.classifiedArtifactsAuto += 1 }) {
                         Image(systemName: "plus")
                             .frame(width: 37, height: 37)
                             .background(Color.gray.opacity(0.2))
@@ -70,52 +70,46 @@ struct ScoreAuto: View{
         }//: end artifact counter Hstack
         .padding(.horizontal)
         
+        
         ScrollView{
             VStack(spacing: 12) {
                 ForEach(0..<9, id: \.self) { index in
                     HStack {
+                        
                         Text("Gate \(index + 1)")
                             .font(.headline)
                             .frame(width: 80, alignment: .leading)
                         
-                        Spacer()
                         
-                        HStack(spacing: 12) {
-                            Button(action: { matchData.gateStatesAuto[index] = .green }) {
-                                Text("Green")
-                                    .fontWeight(.medium)
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 8)
-                                    .background(matchData.gateStatesAuto[index] == .green ? Color.orange : Color.gray.opacity(0.2))
-                                    .foregroundColor(matchData.gateStatesAuto[index] == .green ? .white : .primary)
-                                    .cornerRadius(8)
+                        HStack(spacing: 20) {
+                            // Green Ball Button
+                            Button(action: {
+                                // Toggle: if already green, set to none; otherwise set to green
+                                matchData.gateStatesAuto[index] =
+                                matchData.gateStatesAuto[index] == .green ? .none : .green
+                            }) {
+                                Image(systemName: matchData.gateStatesAuto[index] == .green ? "tennisball.fill" : "tennisball")
+                                    .font(.system(size: 40))
+                                    .foregroundColor(.green)
                             }
                             
-                            Button(action: { matchData.gateStatesAuto[index] = .purple }) {
-                                Text("Purple")
-                                    .fontWeight(.medium)
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 8)
-                                    .background(matchData.gateStatesAuto[index] == .purple ? Color.orange : Color.gray.opacity(0.2))
-                                    .foregroundColor(matchData.gateStatesAuto[index] == .purple ? .white : .primary)
-                                    .cornerRadius(8)
+                            // Purple Ball Button
+                            Button(action: {
+                                // Toggle: if already purple, set to none; otherwise set to purple
+                                matchData.gateStatesAuto[index] =
+                                matchData.gateStatesAuto[index] == .purple ? .none : .purple
+                            }) {
+                                Image(systemName: matchData.gateStatesAuto[index] == .purple ? "tennisball.fill" : "tennisball")
+                                    .font(.system(size: 40))
+                                    .foregroundColor(.purple)
                             }
-                            
-                            Button(action: { matchData.gateStatesAuto[index] = .none }) {
-                                Text("None")
-                                    .fontWeight(.medium)
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 8)
-                                    .background(matchData.gateStatesAuto[index] == .none ? Color.orange : Color.gray.opacity(0.2))
-                                    .foregroundColor(matchData.gateStatesAuto[index] == .none ? .white : .primary)
-                                    .cornerRadius(8)
-                            }
-                        }
+                        }//: end hstack
+                        
                     }
                     .padding(.horizontal)
                 }
-                
-            }
+            }//: end vstack (list of gates)
+            
         }//: end gate toggle ScrollView
         
         // Robot Leave Toggles

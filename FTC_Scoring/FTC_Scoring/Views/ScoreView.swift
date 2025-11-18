@@ -22,6 +22,7 @@ struct ScoreView: View {
     
     
     @StateObject private var matchData = MatchData()
+    @StateObject private var teamSettings = TeamSettings()
     
     @State private var matchMode: GameMode = .standard
     @State private var gamePhase: GamePhase = .auto
@@ -31,10 +32,10 @@ struct ScoreView: View {
     @State private var isTimerRunning = false
     @State private var timer: Timer?
     
-    private var TeamNum: String = "17355"
-    private var SessionID: String = "10.24.25"
-    private var MatchID: Int = 2
-    
+    @State private var showingEditSheet = false
+    @State private var sessionID: String = "10.24.25"
+    @State private var matchID: Int = 2
+
     enum GameMode {
         case standard, custom
     }
@@ -49,27 +50,50 @@ struct ScoreView: View {
     
     var body: some View {
         VStack{
-            VStack{
-                Text("Team: \(TeamNum)")
-                    .font(.title2)
-                HStack{
-                    VStack(alignment: .leading){
-                        Text("Session: \(SessionID)")
-                        Text("Match: \(MatchID)")
-                    }
-                    Spacer()
-                    Button(action: {
-                        print("edit button pressed")
-                    }) {
-                        Image(systemName: "square.and.pencil")
-                            .font(.title)
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 4) {
+                        Text("\(teamSettings.teamNumber):")
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                        Text(teamSettings.teamName)
+                            .font(.headline)
                             .foregroundColor(.ftcOrange)
+                            .lineLimit(1)
                     }
-                }
-                .padding(.top, 3)
-
-            }//: end header VStack
-            .padding()
+                    HStack(spacing: 8) {
+                        Text("Session: \(sessionID)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text("•")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text("Match: \(matchID)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }//: end info Vstack
+                
+                Spacer()
+                
+                Button(action: {
+                    showingEditSheet = true
+                }) {
+                    Image(systemName: "square.and.pencil")
+                        .font(.title2)
+                        .foregroundColor(.ftcOrange)
+                }//: end edit button
+                
+                Button(action: {
+                    matchData.reset()
+                }) {
+                    Image(systemName: "arrow.counterclockwise")
+                        .font(.title2)
+                        .foregroundColor(.red)
+                }//: end reset button
+            }//: end header Hstack
+            .padding(.horizontal)
+            .padding(.vertical, 8)
             
             
             
@@ -121,6 +145,78 @@ struct ScoreView: View {
             
             Divider()
             
+            HStack(spacing: 13) {
+                Text("Motif:")
+                    .font(.headline)
+                
+                Button(action: { matchData.selectedMotif = 1 }) {
+                    Text("ID 21")
+                        .font(.title3)
+                        .fontWeight(.medium)
+                        .frame(width: 50, height: 30)
+                        .background(matchData.selectedMotif == 1 ? Color.ftcOrange : Color.gray.opacity(0.2))
+                        .foregroundColor(matchData.selectedMotif == 1 ? .white : .primary)
+                        .cornerRadius(8)
+                }
+                
+                Button(action: { matchData.selectedMotif = 2 }) {
+                    Text("ID 22")
+                        .font(.title3)
+                        .fontWeight(.medium)
+                        .frame(width: 50, height: 30)
+                        .background(matchData.selectedMotif == 2 ? Color.ftcOrange : Color.gray.opacity(0.2))
+                        .foregroundColor(matchData.selectedMotif == 2 ? .white : .primary)
+                        .cornerRadius(8)
+                }
+                
+                Button(action: { matchData.selectedMotif = 3 }) {
+                    Text("ID 23")
+                        .font(.title3)
+                        .fontWeight(.medium)
+                        .frame(width: 50, height: 30)
+                        .background(matchData.selectedMotif == 3 ? Color.ftcOrange : Color.gray.opacity(0.2))
+                        .foregroundColor(matchData.selectedMotif == 3 ? .white : .primary)
+                        .cornerRadius(8)
+                }
+                
+                if(matchData.selectedMotif == 1){// G-P-P
+                    Circle()
+                        .fill(.green)
+                        .frame(width: 20, height: 20)
+                    Circle()
+                        .fill(.purple)
+                        .frame(width: 20, height: 20)
+                    Circle()
+                        .fill(.purple)
+                        .frame(width: 20, height: 20)
+                }
+                else if(matchData.selectedMotif == 2){// P-G-P
+                    Circle()
+                        .fill(.purple)
+                        .frame(width: 20, height: 20)
+                    Circle()
+                        .fill(.green)
+                        .frame(width: 20, height: 20)
+                    Circle()
+                        .fill(.purple)
+                        .frame(width: 20, height: 20)
+                }
+                else{// P-P-G
+                    Circle()
+                        .fill(.purple)
+                        .frame(width: 20, height: 20)
+                    Circle()
+                        .fill(.purple)
+                        .frame(width: 20, height: 20)
+                    Circle()
+                        .fill(.green)
+                        .frame(width: 20, height: 20)
+                }
+                
+                
+            }//: end motif selector
+            .padding(.horizontal, 8)
+            
             Picker("Game Phase", selection: $gamePhase) {
                 Text("Autonomous").tag(GamePhase.auto)
                 Text("Teleop").tag(GamePhase.teleop)
@@ -138,14 +234,58 @@ struct ScoreView: View {
                 case .teleop:
                     ScoreTele(matchData: matchData)
                 case .endgame:
-                    ScoreEndgame(matchData: matchData)
+                    ScoreEndgame(matchData: matchData, matchMode: $matchMode)
                 }
             }//: end phase switcher
             Spacer()
             
             
         }
+        .sheet(isPresented: $showingEditSheet) {
+            NavigationView {
+                Form {
+                    Section(header: Text("Team Information")) {
+                        HStack {
+                            Text("Team Number")
+                            Spacer()
+                            TextField("Team #", text: $teamSettings.teamNumber)
+                                .multilineTextAlignment(.trailing)
+                                .keyboardType(.numberPad)
+                        }
+                        
+                        HStack {
+                            Text("Team Name")
+                            Spacer()
+                            TextField("Team Name", text: $teamSettings.teamName)
+                                .multilineTextAlignment(.trailing)
+                        }
+                    }
+                    
+                    Section(header: Text("Match Information")) {
+                        HStack {
+                            Text("Session ID")
+                            Spacer()
+                            TextField("Session", text: $sessionID)
+                                .multilineTextAlignment(.trailing)
+                        }
+                        
+                        Stepper("Match: \(matchID)", value: $matchID, in: 1...999)
+                    }
+                }//: end form
+                .navigationTitle("Edit Match Info")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button("Done") {
+                            showingEditSheet = false
+                        }
+                        .foregroundColor(.ftcOrange)
+                    }
+                }//: end toolbar
+            }//: end NavView
+        }//: end sheet
             
+        
     }// end Body View
     
     
