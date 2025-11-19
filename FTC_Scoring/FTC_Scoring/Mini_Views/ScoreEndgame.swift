@@ -10,6 +10,17 @@ import SwiftUI
 struct ScoreEndgame: View{
     @ObservedObject var matchData: MatchData
     @Binding var matchMode: ScoreView.GameMode
+    @ObservedObject var storageManager: MatchStorageManager
+    @ObservedObject var teamSettings: TeamSettings
+    
+    @State private var showSaveSuccess = false
+    @State private var showSaveError = false
+    
+//    @State private var currentMatchNumber: Int = 1
+//    @State private var currentSession: String = ""
+    
+    @Binding var currentSession: String
+    @Binding var currentMatchNumber: Int
     
     var body: some View{
         VStack(spacing: 12) {
@@ -132,15 +143,42 @@ struct ScoreEndgame: View{
             
             Divider()
             Spacer()
-            HStack{
+            VStack(spacing: 8) {
+                Button(action: saveMatch) {
+                    Text("Save Match")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.white)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(Color.ftcOrange)
+                        .cornerRadius(12)
+                }
+                .padding(.horizontal)
                 
-                Button("Save Match", action: {
-                    print("save match button pressed")
-                    //eventually need to pop up match summary/confirm save button and then save a match record to the memory (non volitile)
-                })
-                .buttonStyle(.glassProminent)
-                .font(.title2)
-            }
+                // Success/Error messages
+                if showSaveSuccess {
+                    HStack {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.green)
+                        Text("Match saved successfully!")
+                            .foregroundColor(.green)
+                    }
+                    .font(.subheadline)
+                    .transition(.scale.combined(with: .opacity))
+                }
+                
+                if showSaveError {
+                    HStack {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundColor(.red)
+                        Text("Error saving match. Please try again.")
+                            .foregroundColor(.red)
+                    }
+                    .font(.subheadline)
+                    .transition(.scale.combined(with: .opacity))
+                }
+            }//: end save button VStack
             Spacer()
             
         }//: end Vstack
@@ -174,4 +212,59 @@ struct ScoreEndgame: View{
         let tempRecord = matchData.createMatchRecord(teamNumber: "", matchNumber: 0, session: "", matchType: getMatchType())
         return tempRecord.totalRankingPoints
     }
+    
+    // Save the current match
+    private func saveMatch() {
+        // Generate session ID if empty (format: MM.DD.YY)
+        if currentSession.isEmpty {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "MM.dd.yy"
+            currentSession = dateFormatter.string(from: Date())
+        }
+        
+        // Create the match record
+        let matchRecord = matchData.createMatchRecord(
+            teamNumber: teamSettings.teamNumber,
+            matchNumber: currentMatchNumber,
+            session: currentSession,
+            matchType: getMatchType()
+        )
+        print("session saved: \(matchRecord.session)")
+        
+        // Save to storage
+        let success = storageManager.saveMatch(matchRecord)
+        
+        // Show feedback
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+            if success {
+                showSaveSuccess = true
+                showSaveError = false
+                
+                // Increment match number for next match
+                currentMatchNumber += 1
+                
+                // Hide success message after 2 seconds
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                    withAnimation {
+                        showSaveSuccess = false
+                    }
+                }
+                
+                // Reset match data for next match
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    matchData.reset()
+                }
+            } else {
+                showSaveError = true
+                showSaveSuccess = false
+                
+                // Hide error message after 3 seconds
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                    withAnimation {
+                        showSaveError = false
+                    }
+                }
+            }
+        }
+    }//: end saveMatch func
 }

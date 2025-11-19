@@ -29,6 +29,7 @@ struct MatchRecord: Codable, Identifiable{
     let teleopPhase: TeleData
     let endgamePhase: EndgameData
     let selectedMotif: Int
+    var isIncluded: Bool
     
     // Computed properties for scoring
     var totalScore: Int {
@@ -179,7 +180,8 @@ class MatchData: ObservableObject{
             endgamePhase: EndgameData(
                 robotBaseState: robotBaseState
             ),
-            selectedMotif: selectedMotif
+            selectedMotif: selectedMotif,
+            isIncluded: matchType == .practice
         )
     }
     

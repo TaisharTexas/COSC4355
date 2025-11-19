@@ -23,6 +23,7 @@ struct ScoreView: View {
     
     @StateObject private var matchData = MatchData()
     @StateObject private var teamSettings = TeamSettings()
+    @StateObject private var storageManager = MatchStorageManager()
     
     @State private var matchMode: GameMode = .standard
     @State private var gamePhase: GamePhase = .auto
@@ -33,8 +34,8 @@ struct ScoreView: View {
     @State private var timer: Timer?
     
     @State private var showingEditSheet = false
-    @State private var sessionID: String = "10.24.25"
-    @State private var matchID: Int = 2
+    @State private var sessionID: String = ""
+    @State private var matchID: Int = 1
 
     enum GameMode {
         case standard, custom
@@ -234,7 +235,12 @@ struct ScoreView: View {
                 case .teleop:
                     ScoreTele(matchData: matchData)
                 case .endgame:
-                    ScoreEndgame(matchData: matchData, matchMode: $matchMode)
+                    ScoreEndgame(matchData: matchData,
+                                 matchMode: $matchMode,
+                                 storageManager: storageManager,
+                                 teamSettings: teamSettings,
+                                 currentSession: $sessionID,
+                                 currentMatchNumber: $matchID)
                 }
             }//: end phase switcher
             Spacer()
@@ -284,6 +290,14 @@ struct ScoreView: View {
                 }//: end toolbar
             }//: end NavView
         }//: end sheet
+        .onAppear {
+            // Set default session to current date if empty
+            if sessionID.isEmpty {
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "MM.dd.yy"
+                sessionID = dateFormatter.string(from: Date())
+            }
+        }//: end onAppear
             
         
     }// end Body View

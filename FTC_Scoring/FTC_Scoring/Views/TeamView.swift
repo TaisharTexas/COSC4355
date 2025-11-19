@@ -22,6 +22,7 @@ struct TeamView: View {
     
     @State private var viewMode: DataViewMode = .report
     
+    
     enum DataViewMode {
         case analysis, report
     }
