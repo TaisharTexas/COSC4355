@@ -6,16 +6,11 @@
 //
 
 import SwiftUI
-
-//struct SessionItem: Identifiable {
-//    let id = UUID()
-//    let title: String
-//    var isIncluded: Bool
-//}
+import Combine
 
 struct TeamReportView: View{
     
-    @StateObject private var storageManager = MatchStorageManager()
+    @ObservedObject var storageManager: MatchStorageManager
     @StateObject private var teamSettings = TeamSettings()
         
     // Group matches by session
@@ -26,27 +21,10 @@ struct TeamReportView: View{
         return groups.map { (session: $0.key, matches: $0.value.sorted { $0.matchNumber < $1.matchNumber }) }
             .sorted { $0.session > $1.session } // Most recent sessions first
     }
-    
-    /**
-     TEMP data
-     */
-//    @State private var sessions = [
-//        SessionItem(title: "9.20.25 Champ Practice runs", isIncluded: true),
-//        SessionItem(title: "9.19.25 test runs", isIncluded: false),
-//        SessionItem(title: "9.15.25 Practices", isIncluded: true),
-//        SessionItem(title: "9.14.25 Practices", isIncluded: true),
-//        SessionItem(title: "testing drivetrain with turret", isIncluded: false)
-//    ]
+
     
     var body: some View {
         NavigationStack {
-//            VStack(alignment: .leading) {
-//                Text("Team Number:")
-//                    .font(.caption)
-//                Text(teamSettings.teamNumber)
-//                    .font(.title)
-//            }
-//            .padding(.horizontal)
             
             HStack{
                 Text("\(teamSettings.teamNumber):")
@@ -83,6 +61,15 @@ struct TeamReportView: View{
                 Text("Matches")
                     .font(.headline)
                     .fontWeight(.semibold)
+                
+                Button(action: {
+                    // Force view refresh by triggering objectWillChange
+                    storageManager.objectWillChange.send()
+                }) {
+                    Image(systemName: "arrow.clockwise")
+                        .foregroundColor(.ftcOrange)
+                        .font(.title3)
+                }
                 
                 Spacer()
                 
@@ -147,8 +134,16 @@ struct TeamReportView: View{
                                                 .font(.caption)
                                                 .padding(.horizontal, 8)
                                                 .padding(.vertical, 2)
-                                                .background(match.matchType == .practice ? Color.blue.opacity(0.2) : Color.purple.opacity(0.2))
-                                                .foregroundColor(match.matchType == .practice ? .blue : .purple)
+                                                .background(match.matchType == .practice ? Color.ftcOrange.opacity(0.2) : Color.purple.opacity(0.2))
+                                                .foregroundColor(match.matchType == .practice ? .ftcOrange : .purple)
+                                                .cornerRadius(4)
+                                            //Match side badge
+                                            Text(match.matchSide.rawValue)
+                                                .font(.caption)
+                                                .padding(.horizontal, 8)
+                                                .padding(.vertical, 2)
+                                                .background(match.matchSide == .blue ? Color.ftcBlue.opacity(0.2) : Color.ftcRed.opacity(0.2))
+                                                .foregroundColor(match.matchSide == .blue ? .ftcBlue : .ftcRed)
                                                 .cornerRadius(4)
                                         }
                                         

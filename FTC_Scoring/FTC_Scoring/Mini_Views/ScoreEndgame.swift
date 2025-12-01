@@ -10,6 +10,7 @@ import SwiftUI
 struct ScoreEndgame: View{
     @ObservedObject var matchData: MatchData
     @Binding var matchMode: ScoreView.GameMode
+    @Binding var matchSide: MatchSide
     @ObservedObject var storageManager: MatchStorageManager
     @ObservedObject var teamSettings: TeamSettings
     
@@ -188,28 +189,32 @@ struct ScoreEndgame: View{
         return matchMode == .standard ? .practice : .custom
     }
     
+    private func getMatchSide() ->   MatchSide {
+        return matchSide
+    }
+    
     // Calculate Movement Points using MatchRecord logic
     private func calculateMovementPoints() -> Int {
         // Create a temporary match record to use its calculation logic
-        let tempRecord = matchData.createMatchRecord(teamNumber: "", matchNumber: 0, session: "", matchType: getMatchType())
+        let tempRecord = matchData.createMatchRecord(teamNumber: "", matchNumber: 0, session: "", matchType: getMatchType(), matchSide: .red)
         return tempRecord.movementPoints
     }
     
     // Calculate Goal Points using MatchRecord logic
     private func calculateGoalPoints() -> Int {
-        let tempRecord = matchData.createMatchRecord(teamNumber: "", matchNumber: 0, session: "", matchType: getMatchType())
+        let tempRecord = matchData.createMatchRecord(teamNumber: "", matchNumber: 0, session: "", matchType: getMatchType(), matchSide: .red)
         return tempRecord.goalPoints
     }
     
     // Calculate Pattern Points using MatchRecord logic
     private func calculatePatternPoints() -> Int {
-        let tempRecord = matchData.createMatchRecord(teamNumber: "", matchNumber: 0, session: "", matchType: getMatchType())
+        let tempRecord = matchData.createMatchRecord(teamNumber: "", matchNumber: 0, session: "", matchType: getMatchType(), matchSide: .red)
         return tempRecord.patternPoints
     }
     
     // Calculate total ranking points earned
     private func calculateTotalRankingPoints() -> Int {
-        let tempRecord = matchData.createMatchRecord(teamNumber: "", matchNumber: 0, session: "", matchType: getMatchType())
+        let tempRecord = matchData.createMatchRecord(teamNumber: "", matchNumber: 0, session: "", matchType: getMatchType(), matchSide: .red)
         return tempRecord.totalRankingPoints
     }
     
@@ -227,7 +232,8 @@ struct ScoreEndgame: View{
             teamNumber: teamSettings.teamNumber,
             matchNumber: currentMatchNumber,
             session: currentSession,
-            matchType: getMatchType()
+            matchType: getMatchType(),
+            matchSide: getMatchSide()
         )
         print("session saved: \(matchRecord.session)")
         

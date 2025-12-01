@@ -23,9 +23,10 @@ struct ScoreView: View {
     
     @StateObject private var matchData = MatchData()
     @StateObject private var teamSettings = TeamSettings()
-    @StateObject private var storageManager = MatchStorageManager()
+    @ObservedObject var storageManager: MatchStorageManager
     
     @State private var matchMode: GameMode = .standard
+    @State private var matchSide: MatchSide = .red
     @State private var gamePhase: GamePhase = .auto
     
     //timer vars
@@ -43,6 +44,10 @@ struct ScoreView: View {
 
     enum GamePhase{
         case auto, teleop, endgame
+    }
+    
+    enum GameSide{
+        case red, blue
     }
 
     enum GateState{
@@ -90,7 +95,7 @@ struct ScoreView: View {
                 }) {
                     Image(systemName: "arrow.counterclockwise")
                         .font(.title2)
-                        .foregroundColor(.red)
+                        .foregroundColor(.ftcRed)
                 }//: end reset button
             }//: end header Hstack
             .padding(.horizontal)
@@ -105,11 +110,39 @@ struct ScoreView: View {
             .pickerStyle(SegmentedPickerStyle())
             .padding(.horizontal)
             
+            HStack(spacing: 0) {
+                Button(action: { matchSide = .red }) {
+                    Text("Red")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(matchSide == .red ? .white : .primary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(matchSide == .red ? Color.ftcRed : Color.clear)
+                        .cornerRadius(16)
+                }
+                
+                Button(action: { matchSide = .blue }) {
+                    Text("Blue")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(matchSide == .blue ? .white : .primary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(matchSide == .blue ? Color.ftcBlue : Color.clear)
+                        .cornerRadius(16)
+                }
+            }
+            .background(Color(UIColor.systemGray5))
+            .cornerRadius(16)
+            .padding(.horizontal)
+            .padding(.top, 5)
+            
             // Timer Section
             HStack(spacing: 30) {
                 Button(action: startTimer) {
                     Circle()
-                        .fill(Color.blue)
+                        .fill(Color.ftcBlue)
                         .frame(width: 70, height: 70)
                         .overlay(
                             Text("Start")
@@ -129,7 +162,7 @@ struct ScoreView: View {
                        }
                    }) {
                     Circle()
-                        .fill(Color.red)
+                        .fill(Color.ftcRed)
                         .frame(width: 70, height: 70)
                         .overlay(
                             Text(isTimerRunning ? "Stop" : "Reset")
@@ -138,7 +171,6 @@ struct ScoreView: View {
                         )
                 }//: stop timer button
             }//: end Timer HStack
-            .padding(.vertical, 10)
             .background(Color(UIColor.systemGray6))
             .cornerRadius(12)
             .padding(.horizontal)
@@ -237,6 +269,7 @@ struct ScoreView: View {
                 case .endgame:
                     ScoreEndgame(matchData: matchData,
                                  matchMode: $matchMode,
+                                 matchSide: $matchSide,
                                  storageManager: storageManager,
                                  teamSettings: teamSettings,
                                  currentSession: $sessionID,
@@ -336,6 +369,6 @@ struct ScoreView: View {
 }//: end ScoreView View
 
 #Preview {
-    ScoreView()
+    ScoreView(storageManager: MatchStorageManager())
 }
 

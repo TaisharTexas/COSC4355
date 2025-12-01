@@ -102,11 +102,11 @@ struct ContentView: View {
             // when the screen is made active refresh the data (checks if the day as reset or not)
             // also checks after a set period of time if the screen is active for a while
             if scenePhase == .active {
-                    moodStorage.refreshDayIfNeeded()
-                    startTimer()
-                } else if scenePhase == .background {
-                    stopTimer()
-                }
+                moodStorage.refreshDayIfNeeded()
+                startTimer()
+            } else if scenePhase == .background {
+                stopTimer()
+            }
         }
         .onAppear {
             startTimer()

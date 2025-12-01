@@ -21,6 +21,7 @@ import SwiftUI
 struct TeamView: View {
     
     @State private var viewMode: DataViewMode = .report
+    @ObservedObject var storageManager: MatchStorageManager
     
     
     enum DataViewMode {
@@ -39,9 +40,9 @@ struct TeamView: View {
         Group{
             switch viewMode {
             case .analysis:
-                TeamAnalysisView_Self()
+                TeamAnalysisView_Self(storageManager: storageManager)
             case .report:
-                TeamReportView()
+                TeamReportView(storageManager: storageManager)
                 
             }
         }//: end view toggle
@@ -51,5 +52,5 @@ struct TeamView: View {
 }
 
 #Preview {
-    TeamView()
+    TeamView(storageManager: MatchStorageManager())
 }

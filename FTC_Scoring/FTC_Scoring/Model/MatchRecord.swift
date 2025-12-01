@@ -18,6 +18,11 @@ enum MatchType: String, Codable {
     case custom = "Custom"
 }
 
+enum MatchSide: String, Codable {
+    case red = "Red"
+    case blue = "Blue"
+}
+
 struct MatchRecord: Codable, Identifiable{
     var id = UUID()
     let teamNumber: String
@@ -25,6 +30,7 @@ struct MatchRecord: Codable, Identifiable{
     let session: String
     let timestamp: Date
     let matchType: MatchType
+    let matchSide: MatchSide
     let autoPhase: AutoData
     let teleopPhase: TeleData
     let endgamePhase: EndgameData
@@ -157,13 +163,14 @@ class MatchData: ObservableObject{
         case partial, full, none
     }
     
-    func createMatchRecord(teamNumber: String, matchNumber: Int, session: String, matchType: MatchType) -> MatchRecord {
+    func createMatchRecord(teamNumber: String, matchNumber: Int, session: String, matchType: MatchType, matchSide: MatchSide) -> MatchRecord {
         return MatchRecord(
             teamNumber: teamNumber,
             matchNumber: matchNumber,
             session: session,
             timestamp: Date(),
             matchType: matchType,
+            matchSide: matchSide,
             autoPhase: AutoData(
                 overflowArtifactsAuto: overflowArtifactsAuto,
                 classifiedArtifactsAuto: classifiedArtifactsAuto,

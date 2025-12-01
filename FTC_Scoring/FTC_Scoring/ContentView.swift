@@ -9,17 +9,20 @@ import SwiftUI
 
 
 struct ContentView: View {
+    
+    @StateObject private var storageManager = MatchStorageManager()
+    
     var body: some View {
         TabView{
             Tab("Score Match", systemImage: "slider.horizontal.2.square"){
-                ScoreView()
+                ScoreView(storageManager: storageManager)
             }
             Tab("Team Data", systemImage: "list.bullet.rectangle.fill"){
-                TeamView()
+                TeamView(storageManager: storageManager)
             }
-            Tab("Event Data", systemImage: "globe.fill"){
-                EventView()
-            }
+//            Tab("Event Data", systemImage: "globe.fill"){
+//                EventView()
+//            }
             Tab("Settings", systemImage: "gearshape.fill"){
                 SettingsView()
             }
