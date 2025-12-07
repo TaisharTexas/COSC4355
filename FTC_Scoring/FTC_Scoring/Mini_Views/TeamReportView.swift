@@ -36,27 +36,27 @@ struct TeamReportView: View{
                     .lineLimit(1)
             }
             
-            HStack {
-                Text("Import Matches from Event:")
-                    .font(.headline)
-                    .foregroundColor(.primary)
-                NavigationLink(destination: SelectEvent()) {
-                    Text("Select Event")
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 16)
-                        .padding(.vertical, 8)
-                        .frame(minWidth: 75, minHeight: 25)
-                        .background(Color.ftcOrange)
-                        .cornerRadius(20)
-                        .font(.headline)
-                }
-            }
-            .padding()
+//            HStack {
+//                Text("Import Matches from Event:")
+//                    .font(.headline)
+//                    .foregroundColor(.primary)
+//                NavigationLink(destination: SearchTeamsView(storageManager: storageManager)) {
+//                    Text("Select Event")
+//                        .foregroundColor(.white)
+//                        .padding(.horizontal, 16)
+//                        .padding(.vertical, 8)
+//                        .frame(minWidth: 75, minHeight: 25)
+//                        .background(Color.ftcOrange)
+//                        .cornerRadius(20)
+//                        .font(.headline)
+//                }
+//            }
+//            .padding()
             
             HStack {
-                Image(systemName: "pencil")
-                    .foregroundColor(.primary)
-                    .font(.title3)
+//                Image(systemName: "pencil")
+//                    .foregroundColor(.primary)
+//                    .font(.title3)
                 
                 Text("Matches")
                     .font(.headline)

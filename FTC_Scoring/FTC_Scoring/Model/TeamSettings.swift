@@ -23,7 +23,7 @@ class TeamSettings: ObservableObject {
     
     init() {
         // Load from UserDefaults or use defaults
-        self.teamNumber = UserDefaults.standard.string(forKey: "teamNumber") ?? "8668"
-        self.teamName = UserDefaults.standard.string(forKey: "teamName") ?? "Should Be Fine"
+        self.teamNumber = UserDefaults.standard.string(forKey: "teamNumber") ?? "18140"
+        self.teamName = UserDefaults.standard.string(forKey: "teamName") ?? "Thunderbolts in Disguise"
     }
 }
