@@ -50,8 +50,6 @@ struct SearchTeamsView: View {
                             .disabled(apiService.isLoading || teamNumberText.isEmpty)
                         }
                         
-                        Text("18140 is my sister's team...can search other teams in TX like 4545, 12857, or 16930. \nI only allow match imports for 18140 currently because this app is specifically made for them to use for self analysis. Scouting other teams and saving their matches for analysis will come later. \nFull team list here: https://ftc-events.firstinspires.org/2023/region/USTX")
-                            .font(.caption)
                     }
                     
                     Divider()
@@ -145,7 +143,8 @@ struct SearchTeamsView: View {
                     teamNumber: teamNumber
                 )
                 await MainActor.run {
-                    events = fetchedEvents
+                    // Sort events by start date, most recent first
+                    events = fetchedEvents.sorted { $0.dateStart > $1.dateStart }
                     if fetchedEvents.isEmpty {
                         connectionStatus = "No events found for team \(teamNumber) in \(currentYear)"
                     } else {
