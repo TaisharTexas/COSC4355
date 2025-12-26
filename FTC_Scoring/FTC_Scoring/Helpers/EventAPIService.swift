@@ -254,6 +254,11 @@ class EventAPIService: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
     
+    // Cache for team match data to avoid redundant API calls
+    // Key format: "season-eventCode-tournamentLevel-teamNumber"
+    private var teamMatchCache: [String: [ScheduledMatch]] = [:]
+    private var teamScoreCache: [String: [MatchScore]] = [:]
+    
     private let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         // The API returns dates without timezone indicator (e.g., "2024-12-07T00:00:00")
@@ -377,6 +382,13 @@ class EventAPIService: ObservableObject {
     
     /// Fetch matches for a team at a specific event
     func fetchMatchesForTeam(season: Int, eventCode: String, teamNumber: Int, tournamentLevel: String = "qual") async throws -> [ScheduledMatch] {
+        // Check cache first
+        let cacheKey = "\(season)-\(eventCode)-\(tournamentLevel)-\(teamNumber)"
+        if let cachedMatches = teamMatchCache[cacheKey] {
+            print("Using cached matches for team \(teamNumber)")
+            return cachedMatches
+        }
+        
         await MainActor.run { isLoading = true }
         defer { Task { await MainActor.run { isLoading = false } } }
         
@@ -384,6 +396,12 @@ class EventAPIService: ObservableObject {
             let endpoint = "/\(season)/schedule/\(eventCode)?tournamentLevel=\(tournamentLevel)&teamNumber=\(teamNumber)"
             let data = try await makeRequest(endpoint: endpoint)
             let response = try decoder.decode(ScheduleResponse.self, from: data)
+            
+            // Cache the results
+            await MainActor.run {
+                teamMatchCache[cacheKey] = response.schedule
+            }
+            
             return response.schedule
         } catch {
             await MainActor.run {
@@ -436,6 +454,13 @@ class EventAPIService: ObservableObject {
     
     /// Fetch all scores for a team at an event
     func fetchScoresForTeam(season: Int, eventCode: String, tournamentLevel: String, teamNumber: Int) async throws -> [MatchScore] {
+        // Check cache first
+        let cacheKey = "\(season)-\(eventCode)-\(tournamentLevel)-\(teamNumber)-scores"
+        if let cachedScores = teamScoreCache[cacheKey] {
+            print("Using cached scores for team \(teamNumber)")
+            return cachedScores
+        }
+        
         await MainActor.run { isLoading = true }
         defer { Task { await MainActor.run { isLoading = false } } }
         
@@ -443,6 +468,12 @@ class EventAPIService: ObservableObject {
             let endpoint = "/\(season)/scores/\(eventCode)/\(tournamentLevel)?teamNumber=\(teamNumber)"
             let data = try await makeRequest(endpoint: endpoint)
             let response = try decoder.decode(MatchScoresResponse.self, from: data)
+            
+            // Cache the results
+            await MainActor.run {
+                teamScoreCache[cacheKey] = response.matchScores
+            }
+            
             return response.matchScores
         } catch {
             await MainActor.run {
@@ -686,4 +717,182 @@ class EventAPIService: ObservableObject {
             isIncluded: true // API matches are included by default
         )
     }
-}
+    
+    // MARK: - Team Performance Analysis
+    
+    /// Analyze a team's performance at an event by comparing with alliance partners
+    func analyzeTeamPerformance(season: Int, eventCode: String, teamNumber: Int) async throws -> TeamEventAnalysis {
+        await MainActor.run { isLoading = true }
+        defer { Task { await MainActor.run { isLoading = false } } }
+        
+        // Fetch target team's matches for both qual and playoff
+        let qualMatches = try await fetchMatchesForTeam(season: season, eventCode: eventCode, teamNumber: teamNumber, tournamentLevel: "qual")
+        let playoffMatches = try await fetchMatchesForTeam(season: season, eventCode: eventCode, teamNumber: teamNumber, tournamentLevel: "playoff")
+        let allTargetMatches = qualMatches + playoffMatches
+        
+        // Fetch scores for all target team matches
+        let qualScores = try await fetchScoresForTeam(season: season, eventCode: eventCode, tournamentLevel: "qual", teamNumber: teamNumber)
+        let playoffScores = try await fetchScoresForTeam(season: season, eventCode: eventCode, tournamentLevel: "playoff", teamNumber: teamNumber)
+        let allTargetScores = qualScores + playoffScores
+        
+        // Calculate target team's stats
+        var wins = 0
+        var losses = 0
+        var ties = 0
+        var totalAllianceScore = 0
+        var totalOpponentScore = 0
+        var matchCount = 0
+        
+        // Track partners
+        var partnerTeamNumbers: Set<Int> = []
+        var partnerMatchData: [Int: PartnerMatchData] = [:] // teamNumber -> data
+        
+        for match in allTargetMatches {
+            guard let teams = match.teams else { continue }
+            
+            // Find which alliance the target team is on
+            guard let targetTeam = teams.first(where: { $0.teamNumber == teamNumber }) else { continue }
+            let targetAlliance = targetTeam.alliance
+            
+            // Find partner
+            let partners = teams.filter { $0.alliance == targetAlliance && $0.teamNumber != teamNumber }
+            for partner in partners {
+                if let partnerNum = partner.teamNumber {
+                    partnerTeamNumbers.insert(partnerNum)
+                }
+            }
+        }
+        
+        // Analyze each score
+        for score in allTargetScores {
+            guard let alliances = score.alliances, alliances.count == 2 else { continue }
+            
+            // Find target team's alliance
+            let targetAlliance = alliances.first { alliance in
+                // Check if this alliance contains our team by checking the teams in the corresponding match
+                if let match = allTargetMatches.first(where: { $0.matchNumber == score.matchNumber }),
+                   let teams = match.teams {
+                    let allianceTeams = teams.filter { $0.alliance == alliance.alliance }
+                    return allianceTeams.contains { $0.teamNumber == teamNumber }
+                }
+                return false
+            }
+            
+            let opponentAlliance = alliances.first { $0.alliance != targetAlliance?.alliance }
+            
+            guard let targetScore = targetAlliance?.totalPoints,
+                  let opponentScore = opponentAlliance?.totalPoints else { continue }
+            
+            matchCount += 1
+            totalAllianceScore += targetScore
+            totalOpponentScore += opponentScore
+            
+            if targetScore > opponentScore {
+                wins += 1
+            } else if targetScore < opponentScore {
+                losses += 1
+            } else {
+                ties += 1
+            }
+        }
+        
+        // Now fetch data for each partner
+        var partnerAnalyses: [PartnerAnalysis] = []
+        
+        for partnerNumber in partnerTeamNumbers {
+            do {
+                // Fetch partner's matches (all matches, not just with target team)
+                let partnerQualMatches = try await fetchMatchesForTeam(season: season, eventCode: eventCode, teamNumber: partnerNumber, tournamentLevel: "qual")
+                let partnerPlayoffMatches = try await fetchMatchesForTeam(season: season, eventCode: eventCode, teamNumber: partnerNumber, tournamentLevel: "playoff")
+                let partnerAllMatches = partnerQualMatches + partnerPlayoffMatches
+                
+                // Fetch partner's scores
+                let partnerQualScores = try await fetchScoresForTeam(season: season, eventCode: eventCode, tournamentLevel: "qual", teamNumber: partnerNumber)
+                let partnerPlayoffScores = try await fetchScoresForTeam(season: season, eventCode: eventCode, tournamentLevel: "playoff", teamNumber: partnerNumber)
+                let partnerAllScores = partnerQualScores + partnerPlayoffScores
+                
+                // Calculate stats with and without target team
+                var withTargetWins = 0, withTargetLosses = 0, withTargetTies = 0
+                var withTargetScore = 0, withTargetMatches = 0
+                var withoutTargetWins = 0, withoutTargetLosses = 0, withoutTargetTies = 0
+                var withoutTargetScore = 0, withoutTargetMatches = 0
+                
+                for score in partnerAllScores {
+                    guard let alliances = score.alliances, alliances.count == 2 else { continue }
+                    
+                    // Find if target team is in this match
+                    let match = partnerAllMatches.first { $0.matchNumber == score.matchNumber }
+                    let hasTargetTeam = match?.teams?.contains { $0.teamNumber == teamNumber } ?? false
+                    
+                    // Find partner's alliance
+                    let partnerAlliance = alliances.first { alliance in
+                        if let matchData = match, let teams = matchData.teams {
+                            let allianceTeams = teams.filter { $0.alliance == alliance.alliance }
+                            return allianceTeams.contains { $0.teamNumber == partnerNumber }
+                        }
+                        return false
+                    }
+                    
+                    let opponentAlliance = alliances.first { $0.alliance != partnerAlliance?.alliance }
+                    
+                    guard let partnerScore = partnerAlliance?.totalPoints,
+                          let oppScore = opponentAlliance?.totalPoints else { continue }
+                    
+                    let won = partnerScore > oppScore
+                    let lost = partnerScore < oppScore
+                    let tied = partnerScore == oppScore
+                    
+                    if hasTargetTeam {
+                        withTargetMatches += 1
+                        withTargetScore += partnerScore
+                        if won { withTargetWins += 1 }
+                        if lost { withTargetLosses += 1 }
+                        if tied { withTargetTies += 1 }
+                    } else {
+                        withoutTargetMatches += 1
+                        withoutTargetScore += partnerScore
+                        if won { withoutTargetWins += 1 }
+                        if lost { withoutTargetLosses += 1 }
+                        if tied { withoutTargetTies += 1 }
+                    }
+                }
+                
+                let avgWithTarget = withTargetMatches > 0 ? Double(withTargetScore) / Double(withTargetMatches) : 0
+                let avgWithoutTarget = withoutTargetMatches > 0 ? Double(withoutTargetScore) / Double(withoutTargetMatches) : 0
+                
+                partnerAnalyses.append(PartnerAnalysis(
+                    teamNumber: partnerNumber,
+                    matchesWithTarget: withTargetMatches,
+                    winsWithTarget: withTargetWins,
+                    lossesWithTarget: withTargetLosses,
+                    tiesWithTarget: withTargetTies,
+                    avgScoreWithTarget: avgWithTarget,
+                    matchesWithoutTarget: withoutTargetMatches,
+                    winsWithoutTarget: withoutTargetWins,
+                    lossesWithoutTarget: withoutTargetLosses,
+                    tiesWithoutTarget: withoutTargetTies,
+                    avgScoreWithoutTarget: avgWithoutTarget
+                ))
+            } catch {
+                print("Error fetching data for partner \(partnerNumber): \(error)")
+                // Continue with other partners
+            }
+        }
+        
+        let avgAllianceScore = matchCount > 0 ? Double(totalAllianceScore) / Double(matchCount) : 0
+        let avgOpponentScore = matchCount > 0 ? Double(totalOpponentScore) / Double(matchCount) : 0
+        
+        return TeamEventAnalysis(
+            teamNumber: teamNumber,
+            eventCode: eventCode,
+            matchCount: matchCount,
+            wins: wins,
+            losses: losses,
+            ties: ties,
+            avgAllianceScore: avgAllianceScore,
+            avgOpponentScore: avgOpponentScore,
+            partnerAnalyses: partnerAnalyses.sorted { $0.matchesWithTarget > $1.matchesWithTarget }
+        )
+    }
+    
+}//: end EventAPIService
