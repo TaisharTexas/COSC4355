@@ -29,9 +29,9 @@ struct ContentView: View {
             Tab("Settings", systemImage: "gearshape.fill"){
                 SettingsView()
             }
-            Tab("API Test", systemImage: "flask.fill"){
-                APITestView(storageManager: storageManager)
-            }
+//            Tab("API Test", systemImage: "flask.fill"){
+//                APITestView(storageManager: storageManager)
+//            }
         }
         .tint(Color("ftc_orange"))
     }

@@ -152,3 +152,15 @@ struct AnalysisMatchData {
     let partnerScore: Int
     let opponentWinRate: Double
 }
+
+struct EventRankingsModel: Codable {
+    let rankings: [TeamRankingModel]?
+}
+
+struct TeamRankingModel: Codable {
+    let rank: Int
+    let teamNumber: Int
+    let wins: Int
+    let losses: Int
+    let ties: Int
+}

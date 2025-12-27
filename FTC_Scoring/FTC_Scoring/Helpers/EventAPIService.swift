@@ -6,6 +6,7 @@
 //
 import Combine
 import Foundation
+import SwiftUI
 
 // MARK: - Data Models
 
@@ -893,6 +894,25 @@ class EventAPIService: ObservableObject {
             avgOpponentScore: avgOpponentScore,
             partnerAnalyses: partnerAnalyses.sorted { $0.matchesWithTarget > $1.matchesWithTarget }
         )
+    }
+    
+    func fetchEventRankings(season: Int, eventCode: String) async throws -> [TeamRankingModel] {
+        await MainActor.run { isLoading = true }
+        defer { Task { await MainActor.run { isLoading = false } } }
+        
+        do {
+            let endpoint = "/\(season)/rankings/\(eventCode)"
+            let data = try await makeRequestPublic(endpoint: endpoint)
+            
+            let decoder = JSONDecoder()
+            let response = try decoder.decode(EventRankingsModel.self, from: data)
+            return response.rankings ?? []
+        } catch {
+            await MainActor.run {
+                errorMessage = "Error fetching rankings: \(error.localizedDescription)"
+            }
+            throw error
+        }
     }
     
 }//: end EventAPIService
