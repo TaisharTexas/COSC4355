@@ -30,6 +30,10 @@ struct FTCTeam: Codable, Identifiable, Equatable {
     
     var id: Int { teamNumber }
     
+    var teamNumberString: String {
+        displayTeamNumber ?? String(teamNumber)
+    }
+    
     var displayName: String {
         nameShort ?? nameFull ?? "Team \(teamNumber)"
     }
@@ -55,7 +59,7 @@ struct FTCTeam: Codable, Identifiable, Equatable {
         var parts: [String] = []
         if let region = homeRegion { parts.append("Region: \(region)") }
         if let district = districtCode { parts.append("District: \(district)") }
-        return parts.isEmpty ? "No region info" : parts.joined(separator: " • ")
+        return parts.isEmpty ? "No region info" : parts.joined(separator: " â€¢ ")
     }
 }
 
@@ -68,88 +72,26 @@ struct TeamListingsResponse: Codable {
 }
 
 class TeamSettings: ObservableObject {
-    @Published var teamNumber: String {
-        didSet {
-            UserDefaults.standard.set(teamNumber, forKey: "teamNumber")
-        }
-    }
+    static let shared = TeamSettings()
     
-    @Published var teamName: String {
-        didSet {
-            UserDefaults.standard.set(teamName, forKey: "teamName")
-        }
-    }
+    @Published var teamNumber: String
+    
+    @Published var teamName: String
     
     // Additional team info
-    @Published var schoolName: String? {
-        didSet {
-            if let value = schoolName {
-                UserDefaults.standard.set(value, forKey: "schoolName")
-            } else {
-                UserDefaults.standard.removeObject(forKey: "schoolName")
-            }
-        }
-    }
+    @Published var schoolName: String?
     
-    @Published var city: String? {
-        didSet {
-            if let value = city {
-                UserDefaults.standard.set(value, forKey: "city")
-            } else {
-                UserDefaults.standard.removeObject(forKey: "city")
-            }
-        }
-    }
+    @Published var city: String?
     
-    @Published var stateProv: String? {
-        didSet {
-            if let value = stateProv {
-                UserDefaults.standard.set(value, forKey: "stateProv")
-            } else {
-                UserDefaults.standard.removeObject(forKey: "stateProv")
-            }
-        }
-    }
+    @Published var stateProv: String?
     
-    @Published var country: String? {
-        didSet {
-            if let value = country {
-                UserDefaults.standard.set(value, forKey: "country")
-            } else {
-                UserDefaults.standard.removeObject(forKey: "country")
-            }
-        }
-    }
+    @Published var country: String?
     
-    @Published var homeRegion: String? {
-        didSet {
-            if let value = homeRegion {
-                UserDefaults.standard.set(value, forKey: "homeRegion")
-            } else {
-                UserDefaults.standard.removeObject(forKey: "homeRegion")
-            }
-        }
-    }
+    @Published var homeRegion: String?
     
-    @Published var districtCode: String? {
-        didSet {
-            if let value = districtCode {
-                UserDefaults.standard.set(value, forKey: "districtCode")
-            } else {
-                UserDefaults.standard.removeObject(forKey: "districtCode")
-            }
-        }
-    }
+    @Published var districtCode: String?
     
-    @Published var rookieYear: Int? {
-        didSet {
-            if let value = rookieYear {
-                UserDefaults.standard.set(value, forKey: "rookieYear")
-            } else {
-                UserDefaults.standard.removeObject(forKey: "rookieYear")
-            }
-        }
-    }
+    @Published var rookieYear: Int?
     
     // Computed properties
     var displayLocation: String {
@@ -169,6 +111,8 @@ class TeamSettings: ObservableObject {
     
     init() {
         // Load from UserDefaults or use defaults
+        // NOTE: This init is public to allow the singleton creation,
+        // but you should ONLY use TeamSettings.shared, not create new instances
         self.teamNumber = UserDefaults.standard.string(forKey: "teamNumber") ?? "18140"
         self.teamName = UserDefaults.standard.string(forKey: "teamName") ?? "Thunderbolts in Disguise"
         self.schoolName = UserDefaults.standard.string(forKey: "schoolName")
@@ -178,7 +122,67 @@ class TeamSettings: ObservableObject {
         self.homeRegion = UserDefaults.standard.string(forKey: "homeRegion")
         self.districtCode = UserDefaults.standard.string(forKey: "districtCode")
         self.rookieYear = UserDefaults.standard.object(forKey: "rookieYear") as? Int
+        
+        // Set up observers for UserDefaults saving
+        setupObservers()
     }
+    
+    private func setupObservers() {
+        // Observe changes and save to UserDefaults
+        $teamNumber.sink { UserDefaults.standard.set($0, forKey: "teamNumber") }.store(in: &cancellables)
+        $teamName.sink { UserDefaults.standard.set($0, forKey: "teamName") }.store(in: &cancellables)
+        $schoolName.sink { value in
+            if let value = value {
+                UserDefaults.standard.set(value, forKey: "schoolName")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "schoolName")
+            }
+        }.store(in: &cancellables)
+        $city.sink { value in
+            if let value = value {
+                UserDefaults.standard.set(value, forKey: "city")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "city")
+            }
+        }.store(in: &cancellables)
+        $stateProv.sink { value in
+            if let value = value {
+                UserDefaults.standard.set(value, forKey: "stateProv")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "stateProv")
+            }
+        }.store(in: &cancellables)
+        $country.sink { value in
+            if let value = value {
+                UserDefaults.standard.set(value, forKey: "country")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "country")
+            }
+        }.store(in: &cancellables)
+        $homeRegion.sink { value in
+            if let value = value {
+                UserDefaults.standard.set(value, forKey: "homeRegion")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "homeRegion")
+            }
+        }.store(in: &cancellables)
+        $districtCode.sink { value in
+            if let value = value {
+                UserDefaults.standard.set(value, forKey: "districtCode")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "districtCode")
+            }
+        }.store(in: &cancellables)
+        $rookieYear.sink { value in
+            if let value = value {
+                UserDefaults.standard.set(value, forKey: "rookieYear")
+            } else {
+                UserDefaults.standard.removeObject(forKey: "rookieYear")
+            }
+        }.store(in: &cancellables)
+    }
+    
+    private var cancellables = Set<AnyCancellable>()
     
     /// Update team settings from an FTCTeam object
     func updateFromTeam(_ team: FTCTeam) {

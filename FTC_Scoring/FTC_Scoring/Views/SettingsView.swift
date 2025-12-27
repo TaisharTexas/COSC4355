@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @StateObject private var teamSettings = TeamSettings()
+    @ObservedObject private var teamSettings = TeamSettings.shared
     @StateObject private var matchStorage = MatchStorageManager()
     @State private var showingTeamSearch = false
     @State private var showingResetAlert = false

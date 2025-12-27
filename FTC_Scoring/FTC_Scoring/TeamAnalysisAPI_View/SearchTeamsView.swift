@@ -13,7 +13,7 @@ import SwiftUI
 struct SearchTeamsView: View {
     @StateObject private var apiService = EventAPIService()
     @ObservedObject var storageManager: MatchStorageManager
-    @StateObject private var teamSettings = TeamSettings()
+    @ObservedObject private var teamSettings = TeamSettings.shared
     
     @State private var events: [FTCEvent] = []
     @State private var showingUniversalSearch = false
@@ -21,7 +21,7 @@ struct SearchTeamsView: View {
     @State private var errorMessage: String?
     
     var currentYear: Int {
-        Calendar.current.component(.year, from	: Date())
+        Calendar.current.component(.year, from    : Date())
     }
     
     var currentTeamNumber: Int? {

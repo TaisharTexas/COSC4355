@@ -11,7 +11,7 @@ import Combine
 struct TeamReportView: View{
     
     @ObservedObject var storageManager: MatchStorageManager
-    @StateObject private var teamSettings = TeamSettings()
+    @ObservedObject private var teamSettings = TeamSettings.shared
         
     // Group matches by session
     private var groupedMatches: [(session: String, matches: [MatchRecord])] {
@@ -151,9 +151,6 @@ struct TeamReportView: View{
                                             Text("Score: \(match.totalScore)")
                                                 .font(.caption)
                                                 .foregroundColor(.secondary)
-                                            Text("•")
-                                                .font(.caption)
-                                                .foregroundColor(.secondary)
                                             Text("RP: \(match.totalRankingPoints)")
                                                 .font(.caption)
                                                 .foregroundColor(.secondary)
@@ -226,4 +223,3 @@ struct TeamReportView: View{
         storageManager.deleteMatch(at: indicesToDelete)
     }//: end delete func
 }
-

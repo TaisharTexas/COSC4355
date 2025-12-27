@@ -946,7 +946,7 @@ class EventAPIService: ObservableObject {
     /// Search for teams by name or school name
     /// - Parameters:
     ///   - season: The season year (e.g., 2025)
-    ///   - searchText: The text to search for in team names or school names
+    ///   - searchText: The text to search for in team names or school names (supports partial matches)
     ///   - maxPages: Maximum number of pages to fetch (API returns 1000 teams per page)
     /// - Returns: Array of matching FTCTeam objects
     func searchTeamsByName(season: Int, searchText: String, maxPages: Int = 5) async throws -> [FTCTeam] {
@@ -954,7 +954,10 @@ class EventAPIService: ObservableObject {
         defer { Task { await MainActor.run { isLoading = false } } }
         
         var allTeams: [FTCTeam] = []
-        let searchLower = searchText.lowercased()
+        let searchLower = searchText.lowercased().trimmingCharacters(in: .whitespaces)
+        
+        // Split search into words for multi-word matching
+        let searchWords = searchLower.split(separator: " ").map { String($0) }
         
         do {
             // Fetch teams page by page
@@ -967,10 +970,31 @@ class EventAPIService: ObservableObject {
                 
                 // Filter teams that match the search text in name or school
                 let matchingTeams = response.teams.filter { team in
-                    let nameMatch = team.nameFull?.lowercased().contains(searchLower) ?? false
-                    let shortNameMatch = team.nameShort?.lowercased().contains(searchLower) ?? false
-                    let schoolMatch = team.schoolName?.lowercased().contains(searchLower) ?? false
-                    return nameMatch || shortNameMatch || schoolMatch
+                    // Get all searchable text fields
+                    let displayName = team.displayName.lowercased()
+                    let fullName = team.nameFull?.lowercased() ?? ""
+                    let schoolName = team.schoolName?.lowercased() ?? ""
+                    let robotName = team.robotName?.lowercased() ?? ""
+                    
+                    // Combine all searchable fields
+                    let allText = [displayName, fullName, schoolName, robotName].joined(separator: " ")
+                    
+                    // Check if the entire search string is contained anywhere
+                    if allText.contains(searchLower) {
+                        return true
+                    }
+                    
+                    // If multi-word search, check if all words appear somewhere
+                    if searchWords.count > 1 {
+                        let allWordsMatch = searchWords.allSatisfy { word in
+                            allText.contains(word)
+                        }
+                        if allWordsMatch {
+                            return true
+                        }
+                    }
+                    
+                    return false
                 }
                 
                 allTeams.append(contentsOf: matchingTeams)

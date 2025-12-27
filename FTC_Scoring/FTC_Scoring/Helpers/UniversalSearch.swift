@@ -10,9 +10,9 @@ import SwiftUI
 // MARK: - Search Mode Definition
 
 enum SearchMode {
-    case teamEvents        // Find events by team → Navigate to analysis
-    case teamInfo          // Find team info → Set as default
-    case eventDirectory    // Browse/filter events → Import matches or view details
+    case teamEvents        // Find events by team â†’ Navigate to analysis
+    case teamInfo          // Find team info â†’ Set as default
+    case eventDirectory    // Browse/filter events â†’ Import matches or view details
     
     var title: String {
         switch self {
@@ -58,7 +58,7 @@ struct UniversalSearchView: View {
     let onEventSelected: ((FTCEvent) -> Void)?
     
     @StateObject private var apiService = EventAPIService()
-    @StateObject private var teamSettings = TeamSettings()
+    @ObservedObject private var teamSettings = TeamSettings.shared
     @Environment(\.dismiss) var dismiss
     
     @State private var searchText = ""
@@ -486,7 +486,7 @@ struct TeamResultCard: View {
         Button(action: onSelect) {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Text("\(team.teamNumber)")
+                    Text(team.teamNumberString)
                         .font(.title2)
                         .fontWeight(.bold)
                         .foregroundColor(.ftcOrange)
@@ -503,7 +503,7 @@ struct TeamResultCard: View {
                         .cornerRadius(8)
                 }
                 
-                Text(team.fullDisplayName)
+                Text(team.displayName)
                     .font(.headline)
                     .foregroundColor(.primary)
                     .lineLimit(2)
