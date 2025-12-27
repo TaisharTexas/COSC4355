@@ -47,16 +47,16 @@ struct EventView: View {
                         .minimumScaleFactor(0.5)
                         .lineLimit(2)
                     Spacer()
-                    NavigationLink(destination: SelectEvent()){
-                        Text("Select Event")
-                            .foregroundColor(.primary)
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 8)
-                                .frame(minWidth: 100, minHeight: 40)
-                                .background(Color.ftcOrange)
-                                .cornerRadius(20)
-                    }
-                    .padding()
+//                    NavigationLink(destination: SelectEvent()){
+//                        Text("Select Event")
+//                            .foregroundColor(.primary)
+//                                .padding(.horizontal, 16)
+//                                .padding(.vertical, 8)
+//                                .frame(minWidth: 100, minHeight: 40)
+//                                .background(Color.ftcOrange)
+//                                .cornerRadius(20)
+//                    }
+//                    .padding()
                     
                     
                 }

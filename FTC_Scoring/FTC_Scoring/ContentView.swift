@@ -23,9 +23,9 @@ struct ContentView: View {
             Tab("Search Teams", systemImage: "magnifyingglass"){
                 SearchTeamsView(storageManager: storageManager)
             }
-//            Tab("Event Data", systemImage: "globe.fill"){
-//                EventView()
-//            }
+            Tab("Event Data", systemImage: "globe.fill"){
+                EventView()
+            }
             Tab("Settings", systemImage: "gearshape.fill"){
                 SettingsView()
             }

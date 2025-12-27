@@ -10,7 +10,6 @@ import SwiftUI
 struct SettingsView: View {
     @StateObject private var teamSettings = TeamSettings()
     @StateObject private var matchStorage = MatchStorageManager()
-    @State private var showingEditSheet = false
     @State private var showingTeamSearch = false
     @State private var showingResetAlert = false
     
@@ -43,24 +42,12 @@ struct SettingsView: View {
                                 Button(action: {
                                     showingTeamSearch = true
                                 }) {
-                                    Label("Search", systemImage: "magnifyingglass")
+                                    Label("Change Default", systemImage: "magnifyingglass")
                                         .font(.caption)
                                         .foregroundColor(.white)
                                         .padding(.horizontal, 12)
                                         .padding(.vertical, 6)
                                         .background(Color.ftcOrange)
-                                        .cornerRadius(8)
-                                }
-                                
-                                Button(action: {
-                                    showingEditSheet = true
-                                }) {
-                                    Label("Edit", systemImage: "square.and.pencil")
-                                        .font(.caption)
-                                        .foregroundColor(.ftcOrange)
-                                        .padding(.horizontal, 12)
-                                        .padding(.vertical, 6)
-                                        .background(Color.ftcOrange.opacity(0.1))
                                         .cornerRadius(8)
                                 }
                             }
@@ -139,38 +126,6 @@ struct SettingsView: View {
 
         }//: end vstack
         .navigationTitle("Settings")
-        .sheet(isPresented: $showingEditSheet) {
-            NavigationView {
-                Form {
-                    Section(header: Text("Team Information")) {
-                        HStack {
-                            Text("Team Number")
-                            Spacer()
-                            TextField("Team #", text: $teamSettings.teamNumber)
-                                .multilineTextAlignment(.trailing)
-                                .keyboardType(.numberPad)
-                        }
-                        
-                        HStack {
-                            Text("Team Name")
-                            Spacer()
-                            TextField("Team Name", text: $teamSettings.teamName)
-                                .multilineTextAlignment(.trailing)
-                        }
-                    }
-                }//: end form
-                .navigationTitle("Edit Team Info")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button("Done") {
-                            showingEditSheet = false
-                        }
-                        .foregroundColor(.ftcOrange)
-                    }
-                }//: end toolbar
-            }//: end NavView
-        }//: end sheet
         .sheet(isPresented: $showingTeamSearch) {
             UniversalSearchView(
                 mode: .teamInfo,
