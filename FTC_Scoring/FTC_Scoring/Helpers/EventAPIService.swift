@@ -915,4 +915,84 @@ class EventAPIService: ObservableObject {
         }
     }
     
+    // MARK: - Team Search Methods
+    
+    /// Search for a specific team by team number
+    /// - Parameters:
+    ///   - season: The season year (e.g., 2025)
+    ///   - teamNumber: The team number to search for
+    /// - Returns: FTCTeam if found, nil otherwise
+    func searchTeamByNumber(season: Int, teamNumber: Int) async throws -> FTCTeam? {
+        await MainActor.run { isLoading = true }
+        defer { Task { await MainActor.run { isLoading = false } } }
+        
+        do {
+            let endpoint = "/\(season)/teams?teamNumber=\(teamNumber)"
+            let data = try await makeRequest(endpoint: endpoint)
+            
+            let decoder = JSONDecoder()
+            let response = try decoder.decode(TeamListingsResponse.self, from: data)
+            
+            // Return the first team if found
+            return response.teams.first
+        } catch {
+            await MainActor.run {
+                errorMessage = "Error searching for team: \(error.localizedDescription)"
+            }
+            throw error
+        }
+    }
+    
+    /// Search for teams by name or school name
+    /// - Parameters:
+    ///   - season: The season year (e.g., 2025)
+    ///   - searchText: The text to search for in team names or school names
+    ///   - maxPages: Maximum number of pages to fetch (API returns 1000 teams per page)
+    /// - Returns: Array of matching FTCTeam objects
+    func searchTeamsByName(season: Int, searchText: String, maxPages: Int = 5) async throws -> [FTCTeam] {
+        await MainActor.run { isLoading = true }
+        defer { Task { await MainActor.run { isLoading = false } } }
+        
+        var allTeams: [FTCTeam] = []
+        let searchLower = searchText.lowercased()
+        
+        do {
+            // Fetch teams page by page
+            for page in 1...maxPages {
+                let endpoint = "/\(season)/teams?page=\(page)"
+                let data = try await makeRequest(endpoint: endpoint)
+                
+                let decoder = JSONDecoder()
+                let response = try decoder.decode(TeamListingsResponse.self, from: data)
+                
+                // Filter teams that match the search text in name or school
+                let matchingTeams = response.teams.filter { team in
+                    let nameMatch = team.nameFull?.lowercased().contains(searchLower) ?? false
+                    let shortNameMatch = team.nameShort?.lowercased().contains(searchLower) ?? false
+                    let schoolMatch = team.schoolName?.lowercased().contains(searchLower) ?? false
+                    return nameMatch || shortNameMatch || schoolMatch
+                }
+                
+                allTeams.append(contentsOf: matchingTeams)
+                
+                // Stop if we've reached the last page
+                if page >= response.pageTotal {
+                    break
+                }
+                
+                // Stop if we have enough results (prevent fetching too much data)
+                if allTeams.count >= 100 {
+                    break
+                }
+            }
+            
+            return allTeams
+        } catch {
+            await MainActor.run {
+                errorMessage = "Error searching for teams: \(error.localizedDescription)"
+            }
+            throw error
+        }
+    }
+    
 }//: end EventAPIService

@@ -394,7 +394,6 @@ struct MatchScoreView: View {
 
 // MARK: - Alliance Score Card
 
-
 struct AllianceScoreCard: View {
     let alliance: AllianceScore
     let highlightTeam: Int
